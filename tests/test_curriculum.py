@@ -44,6 +44,33 @@ def test_deployment_policy_cannot_expect_teacher_rubric():
     assert validate_deployment_rules(bundle) is bundle
 
 
+def test_abstraction_retry_identifies_constant_without_weakening_guard():
+    from tablersi.memory import Bundle, validate_teacher_abstraction
+
+    bundle = Bundle(role_guidance={"QueryBuilder": "ratio * 100"})
+    with pytest.raises(ValueError, match="'100'.*semantic variables"):
+        validate_teacher_abstraction(bundle)
+    bundle.role_guidance["QueryBuilder"] = "Format the ratio as a percentage"
+    assert validate_teacher_abstraction(bundle) is bundle
+
+
+def test_keyword_retry_identifies_overlong_phrase():
+    from tablersi.memory import Skill
+
+    skill = Skill(
+        id="extrema",
+        keywords=["multi-source extreme union sort"],
+        role_views={"SemanticPlanner": "Find grouped extrema", "QueryBuilder": "Union"},
+        applicability="Extrema across homogeneous tables",
+    )
+    with pytest.raises(
+        ValueError, match="multi-source extreme union sort.*30 characters"
+    ):
+        skill.validate()
+    skill.keywords = ["multi-source extrema"]
+    skill.validate()
+
+
 def test_keyword_compilation_changes_only_unavailable_retrieval_terms():
     from tablersi.curriculum import compile_teacher_keywords
 

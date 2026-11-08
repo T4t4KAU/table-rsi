@@ -61,9 +61,13 @@ def validate_deployment_rules(bundle):
             for s in bundle.skills
         ],
     }
-    if RUBRIC_TERMS.search(json.dumps(views, ensure_ascii=False)):
+    match = RUBRIC_TERMS.search(json.dumps(views, ensure_ascii=False))
+    if match:
         raise ValueError(
-            "Deployment rules cannot depend on unavailable reference rubrics; translate to checking actual SQL evidence and user requirements"
+            "Deployment rules cannot depend on unavailable reference rubrics: "
+            f"{match.group()!r}. Translate the rule to checking actual SQL "
+            "evidence and user requirements; rephrase negated rubric vocabulary "
+            "as an evidence boundary without assuming access to teaching labels."
         )
     return bundle
 

@@ -1,0 +1,218 @@
+{
+  "scope": "Predeployment search only; no audit or deployment consumed",
+  "model": "Qwen3.6-35B-A3B-FP8",
+  "runtime": "cooperative_v3",
+  "teacher": "deepseek-v4-pro, high reasoning effort",
+  "teaching": "317 turns in 71 dialogs from the same 17 designated teaching clusters; instructional induction without actual student trace feedback in these candidates",
+  "budget": {
+    "thinking_tokens": 4096,
+    "generation_tokens_per_call": 8192,
+    "max_model_calls_per_turn": 7,
+    "max_sql_calls_per_turn": 12
+  },
+  "search": {
+    "clusters": 13,
+    "dialogs": 13,
+    "turns": 26
+  },
+  "metrics": {
+    "fully_covered_turn_rate": "Model-judged all reference points covered; not human-verified correctness",
+    "turn_macro_coverage": "Mean reference-point coverage"
+  },
+  "summaries": {
+    "baseline": {
+      "dialogs": 13,
+      "turns": 26,
+      "judge_failures": 0,
+      "turn_macro_coverage": 0.5916666666666667,
+      "dialog_macro_coverage": 0.5916666666666667,
+      "micro_coverage": 0.5053763440860215,
+      "fully_covered_turn_rate": 0.34615384615384615,
+      "local_model_calls": 124,
+      "local_input_tokens": 734180,
+      "local_output_tokens": 431715,
+      "database_calls": 58,
+      "unknown_model_usage_calls": 0,
+      "successful_queries": 51,
+      "failed_queries": 7,
+      "judge_input_tokens": 26330,
+      "judge_output_tokens": 5821,
+      "mean_turn_latency_s": 134.3216176310357
+    },
+    "binding_evidence": {
+      "dialogs": 13,
+      "turns": 26,
+      "judge_failures": 0,
+      "turn_macro_coverage": 0.5275641025641026,
+      "dialog_macro_coverage": 0.5275641025641026,
+      "micro_coverage": 0.45161290322580644,
+      "fully_covered_turn_rate": 0.34615384615384615,
+      "local_model_calls": 130,
+      "local_input_tokens": 863504,
+      "local_output_tokens": 441576,
+      "database_calls": 53,
+      "unknown_model_usage_calls": 0,
+      "successful_queries": 51,
+      "failed_queries": 2,
+      "judge_input_tokens": 26393,
+      "judge_output_tokens": 5861,
+      "mean_turn_latency_s": 159.29144448538025
+    },
+    "complete_answer": {
+      "dialogs": 13,
+      "turns": 26,
+      "judge_failures": 0,
+      "turn_macro_coverage": 0.49551282051282053,
+      "dialog_macro_coverage": 0.49551282051282053,
+      "micro_coverage": 0.41935483870967744,
+      "fully_covered_turn_rate": 0.2692307692307692,
+      "local_model_calls": 131,
+      "local_input_tokens": 823041,
+      "local_output_tokens": 461450,
+      "database_calls": 54,
+      "unknown_model_usage_calls": 0,
+      "successful_queries": 52,
+      "failed_queries": 2,
+      "judge_input_tokens": 26033,
+      "judge_output_tokens": 5769,
+      "mean_turn_latency_s": 143.76227608142204
+    },
+    "cooperative_memory": {
+      "dialogs": 13,
+      "turns": 26,
+      "judge_failures": 0,
+      "turn_macro_coverage": 0.5512820512820513,
+      "dialog_macro_coverage": 0.5512820512820512,
+      "micro_coverage": 0.4946236559139785,
+      "fully_covered_turn_rate": 0.23076923076923078,
+      "local_model_calls": 125,
+      "local_input_tokens": 784837,
+      "local_output_tokens": 441202,
+      "database_calls": 48,
+      "unknown_model_usage_calls": 0,
+      "successful_queries": 47,
+      "failed_queries": 1,
+      "judge_input_tokens": 27839,
+      "judge_output_tokens": 6132,
+      "mean_turn_latency_s": 135.5466880796101
+    }
+  },
+  "paired_comparison": {
+    "method": "paired cluster bootstrap percentile; descriptive, no multiple-comparison correction",
+    "replicates": 4000,
+    "seed": 20261108,
+    "runs": [
+      {
+        "dialogs": 13,
+        "clusters": 13,
+        "turn_macro_coverage": 0.5916666666666667,
+        "cluster_bootstrap_95_ci": [
+          0.4198717948717948,
+          0.7371955128205129
+        ],
+        "gain_vs_first": 0.0,
+        "paired_gain_95_ci": [
+          0.0,
+          0.0
+        ],
+        "fully_covered_turn_rate": 0.34615384615384615,
+        "full_point_bootstrap_95_ci": [
+          0.19230769230769232,
+          0.5
+        ],
+        "full_point_gain_vs_first": 0.0,
+        "full_point_paired_gain_95_ci": [
+          0.0,
+          0.0
+        ],
+        "name": "baseline"
+      },
+      {
+        "dialogs": 13,
+        "clusters": 13,
+        "turn_macro_coverage": 0.5275641025641026,
+        "cluster_bootstrap_95_ci": [
+          0.3243429487179487,
+          0.7243750000000001
+        ],
+        "gain_vs_first": -0.0641025641025641,
+        "paired_gain_95_ci": [
+          -0.1923076923076923,
+          0.05769230769230771
+        ],
+        "fully_covered_turn_rate": 0.34615384615384615,
+        "full_point_bootstrap_95_ci": [
+          0.15384615384615385,
+          0.5384615384615384
+        ],
+        "full_point_gain_vs_first": 0.0,
+        "full_point_paired_gain_95_ci": [
+          -0.15384615384615385,
+          0.15384615384615385
+        ],
+        "name": "binding_evidence"
+      },
+      {
+        "dialogs": 13,
+        "clusters": 13,
+        "turn_macro_coverage": 0.4955128205128205,
+        "cluster_bootstrap_95_ci": [
+          0.30641025641025643,
+          0.6814423076923078
+        ],
+        "gain_vs_first": -0.0961538461538462,
+        "paired_gain_95_ci": [
+          -0.21474358974358976,
+          0.01602564102564108
+        ],
+        "fully_covered_turn_rate": 0.2692307692307692,
+        "full_point_bootstrap_95_ci": [
+          0.11538461538461539,
+          0.46153846153846156
+        ],
+        "full_point_gain_vs_first": -0.07692307692307693,
+        "full_point_paired_gain_95_ci": [
+          -0.2692307692307692,
+          0.11538461538461536
+        ],
+        "name": "complete_answer"
+      },
+      {
+        "dialogs": 13,
+        "clusters": 13,
+        "turn_macro_coverage": 0.5512820512820512,
+        "cluster_bootstrap_95_ci": [
+          0.37692307692307697,
+          0.6974358974358974
+        ],
+        "gain_vs_first": -0.04038461538461546,
+        "paired_gain_95_ci": [
+          -0.14743589743589747,
+          0.0551282051282051
+        ],
+        "fully_covered_turn_rate": 0.23076923076923078,
+        "full_point_bootstrap_95_ci": [
+          0.11538461538461539,
+          0.38461538461538464
+        ],
+        "full_point_gain_vs_first": -0.11538461538461536,
+        "full_point_paired_gain_95_ci": [
+          -0.23076923076923078,
+          0.0
+        ],
+        "name": "cooperative_memory"
+      }
+    ]
+  },
+  "decision": {
+    "promotion": false,
+    "reason": "No learned bundle improves the prespecified full-point then coverage ranking over empty memory",
+    "independent_audit_consumed": false
+  },
+  "limitations": [
+    "One search run per candidate; this search data is used for selection, so confidence intervals are descriptive.",
+    "Concurrency differed between baseline and candidates; token and SQL budgets matched. Latency is not an isolated hardware comparison.",
+    "Observed same-seed serving variability means nominal seed matching does not imply identical model responses.",
+    "Keyword retrieval failed on all ten English turns; role guidance still applied. A separate v5 semantic-routing experiment addresses this engineering issue."
+  ]
+}

@@ -37,8 +37,12 @@ class Skill:
             raise ValueError("Oversized or non-text skill")
         if not isinstance(self.keywords, list) or len(self.keywords) > 20:
             raise ValueError("Invalid retrieval keywords")
-        if not all(isinstance(k, str) and 0 < len(k) <= 30 for k in self.keywords):
-            raise ValueError("Invalid retrieval keyword")
+        for keyword in self.keywords:
+            if not isinstance(keyword, str) or not 0 < len(keyword) <= 30:
+                raise ValueError(
+                    f"Invalid retrieval keyword {keyword!r}; use a nonempty phrase "
+                    "of at most 30 characters, including English spaces"
+                )
 
 
 @dataclass
@@ -194,6 +198,12 @@ def validate_teacher_abstraction(bundle):
         },
         ensure_ascii=False,
     )
-    if re.search(r"tab\d{4}|\b\d{3,}(?:\.\d+)?\b|[0-9a-f]{16}", text):
-        raise ValueError("Teacher policy contains a task identifier or concrete number")
+    match = re.search(r"tab\d{4}|\b\d{3,}(?:\.\d+)?\b|[0-9a-f]{16}", text)
+    if match:
+        raise ValueError(
+            "Teacher policy contains a task identifier or concrete number: "
+            f"{match.group()!r}. Replace it with semantic variables; express "
+            "universal unit or percentage conversion in words without changing "
+            "the mathematical meaning."
+        )
     return bundle.validate()
