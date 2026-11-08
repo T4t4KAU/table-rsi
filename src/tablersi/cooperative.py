@@ -47,14 +47,16 @@ class CooperativeAgent:
         replanned=False,
         patched=False,
         routed=False,
+        aligned=False,
     ):
         self.client = client
         self.bundle = copy.deepcopy(bundle).validate()
         self.max_calls = max_calls
-        self.reconciled = reconciled or replanned or patched or routed
-        self.replanned = replanned or patched or routed
+        self.reconciled = reconciled or replanned or patched or routed or aligned
+        self.replanned = replanned or patched or routed or aligned
         self.patched = patched
-        self.routed = routed
+        self.routed = routed or aligned
+        self.aligned = aligned
         self.dialog_contract = None
 
     def solve(self, store, question, history=None, seed=42):
@@ -79,7 +81,9 @@ class CooperativeAgent:
                 "elapsed_s": time.monotonic() - started,
                 "state_version": self.bundle.version,
                 "bundle_hash": self.bundle.hash,
-                "variant": "cooperative_v5"
+                "variant": "cooperative_v6"
+                if self.aligned
+                else "cooperative_v5"
                 if self.routed
                 else "cooperative_v4"
                 if self.patched
@@ -112,9 +116,10 @@ class CooperativeAgent:
             + " "
             + " ".join(m["content"] for m in history if m["role"] == "user")
         )
-        selected = self.bundle.retrieve(
-            query_context + " " + observations.catalog_text()
-        )
+        if not self.aligned:
+            selected = self.bundle.retrieve(
+                query_context + " " + observations.catalog_text()
+            )
         working = {"question": question, "history": history}
         if self.reconciled and self.dialog_contract:
             working["previous_task_contract"] = self.dialog_contract
@@ -122,8 +127,10 @@ class CooperativeAgent:
                 "Previous model proposal; use for entity continuity, not as factual proof. Current explicit user intent overrides it."
             )
 
-        def call(role, view, cells, final=False, patch_mode=False):
+        def call(role, view, cells, final=False, patch_mode=False, phase=None):
             memory = self.bundle.project(role, selected)
+            if self.aligned and (not selected or phase == "routing_draft"):
+                memory = {"guidance": "", "skills": []}
             prompt_evidence = (
                 working_memory.active(evidence) if working_memory else evidence
             )
@@ -147,13 +154,27 @@ class CooperativeAgent:
                 prompt += "\n协作交接补充契约：\n" + RECONCILED_CONTRACTS[role]
             if self.replanned:
                 prompt += "\n可修订语义契约：\n" + REPLANNED_CONTRACTS[role]
-            if self.routed and self.bundle.skills and role == "SemanticPlanner":
+            if (
+                self.routed
+                and self.bundle.skills
+                and role == "SemanticPlanner"
+                and phase != "selected_memory_plan"
+            ):
                 prompt += (
                     "\n从available_joint_skills按当前用户需求的语义选择零至三项适用技能，不依赖字面关键词或语言一致。"
                     "先检查适用条件和排除条件，将所选技能的规划提示落实到对应requirements；不适用则不选。"
                     "每个选择理由须指出当前问题或原始观察中触发该技能特有条件的线索，不可仅因都涉及汇总、比较等通用功能就选；条件尚无依据时不强行套用。"
                     '在计划JSON增加skill_selection:[{"skill_id":"已知技能ID","reason":"适用理由","need_ids":["已有需求ID"]}]。'
                     "选择将作为一个整体传给后续所有角色；不得臆造技能ID。"
+                )
+            if phase == "selected_memory_plan":
+                prompt += (
+                    "\n本轮技能选择已经固定。请使用所选技能的完整规划规则核对并完善draft_contract，"
+                    "形成交给查询和验证角色的同一份计划。不得重新选择技能；规则不适用时不要强行套用。"
+                    "没有所选技能时，仅依据用户问题和原始观察核对草案。"
+                    "保留原有需求ID与用户要求，可以补充新需求，但不能因技能内容而删除用户要求、"
+                    "缩短时间范围或把原始指标换成另一指标。未知的日期转换、列含义和公式留待实际查询核实，"
+                    "不得把未经工具验证的推算写成已确认事实。返回完整的tables和requirements JSON。"
                 )
             if patch_mode:
                 prompt += (
@@ -177,6 +198,8 @@ class CooperativeAgent:
                 "memory_ids": [s["id"] for s in memory["skills"]],
                 "reads_evidence": [e["id"] for e in prompt_evidence],
             }
+            if phase:
+                record["phase"] = phase
             try:
                 response = self.client.chat(
                     [
@@ -253,7 +276,16 @@ class CooperativeAgent:
             if self.routed and self.bundle.skills
             else {}
         )
-        contract = call("SemanticPlanner", planner_view, overview) or {}
+        routing = {"decisions": []}
+        contract = (
+            call(
+                "SemanticPlanner",
+                planner_view,
+                overview,
+                phase="routing_draft" if self.aligned else None,
+            )
+            or {}
+        )
         if self.routed and self.bundle.skills:
             selected, routing = self.bundle.route(contract, selected)
             trace.append(
@@ -264,6 +296,62 @@ class CooperativeAgent:
                     **routing,
                 }
             )
+        if self.aligned:
+            # Empty-memory controls also refine once: learning must not receive
+            # an unreported extra planning opportunity relative to its control.
+            refined = call(
+                "SemanticPlanner",
+                {
+                    "draft_contract": contract,
+                    "fixed_skill_selection": routing["decisions"],
+                },
+                overview,
+                phase="selected_memory_plan",
+            )
+            requirements = (refined or {}).get("requirements", [])
+            original_requirements = contract.get("requirements", [])
+            original_ids = {
+                r["id"]
+                for r in (
+                    original_requirements
+                    if isinstance(original_requirements, list)
+                    else []
+                )
+                if isinstance(r, dict) and isinstance(r.get("id"), str)
+            }
+            refined_ids = (
+                [r.get("id") for r in requirements if isinstance(r, dict)]
+                if isinstance(requirements, list)
+                else []
+            )
+            valid = (
+                bool(refined)
+                and isinstance(requirements, list)
+                and len(refined_ids) == len(requirements)
+                and all(isinstance(i, str) and i for i in refined_ids)
+                and len(set(refined_ids)) == len(refined_ids)
+                and original_ids <= set(refined_ids)
+                and isinstance(refined.get("tables"), list)
+                and all(
+                    isinstance(t, str) and t in observations.names
+                    for t in refined["tables"]
+                )
+            )
+            trace.append(
+                {
+                    "role": "MemoryPlanning",
+                    "status": "accepted" if valid else "rejected",
+                    "selected_skill_ids": [skill.id for skill in selected],
+                    "reason": "Plan retains original requirement IDs and known tables"
+                    if valid
+                    else "Invalid refinement; retain draft and disable learned memory for this turn",
+                }
+            )
+            if valid:
+                contract = refined
+                contract["skill_selection"] = routing["decisions"]
+            else:
+                selected = []
         if self.reconciled:
             working_memory = WorkingMemory(
                 contract, allow_requirement_revisions=self.replanned

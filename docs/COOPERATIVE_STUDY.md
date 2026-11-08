@@ -243,3 +243,28 @@ tablersi-ask --store data/my-table --question 'Compare the costs.' \
 
 Use the exact version/model/budget approved in the release experiment. Selecting
 an arbitrary combination is not equivalent to deploying that audited release.
+
+### Experimental v6: align planning with the selected joint memory
+
+The v5 planner reads keyword-retrieved role views before proposing semantic
+skill selection. Downstream roles use the new selection, so the planner and
+downstream roles can receive different skill sets. This is a mechanism to
+investigate, not by itself proof that memory caused an accuracy regression.
+
+With `--solver-version v6`, the initial planning call sees the bounded skill
+index without unconditional guidance or keyword-selected full role views.
+After validating the selection, a second planning call reads the selected
+skills' full planner views. The resulting contract and the same skill set pass
+to the query builder, verifier, and composer. When no skill is selected,
+learned global guidance is also omitted. Refinements must retain all original
+valid requirement IDs and use known table names; invalid refinements retain the
+draft and disable learned memory for the turn. Retaining IDs is a structural
+check, not proof that their natural-language meaning is preserved.
+
+The empty-memory v6 control receives the same second planning opportunity.
+Both arms retain the seven-call and twelve-query limits; the extra planning
+call can reduce the budget available for a later answer review. Actual calls
+and tokens must therefore be reported. A v6-v5 gain alone would be a controller
+change, not evidence of learned RSI benefit. Compare taught and empty memory
+within v6 before making that claim. This version is experimental and has no
+approved deployment result yet.

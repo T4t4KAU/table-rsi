@@ -485,3 +485,95 @@ def test_router_empty_memory_preserves_v3_prompts_and_call_budget(tmp_path):
     assert old.messages == new.messages
     assert a["budget"] == b["budget"]
     assert a["answer"] == b["answer"]
+    aligned = Local()
+    c = CooperativeAgent(aligned, Bundle(), aligned=True).solve(store, "Value?")
+    assert aligned.messages[0] == old.messages[0]
+    assert c["budget"]["used_calls"] == a["budget"]["used_calls"] + 1
+    assert "没有所选技能时" in aligned.messages[1][1]["content"]
+
+
+@pytest.mark.parametrize("drop_requirement", [False, True])
+def test_aligned_memory_replans_before_query_and_preserves_requirements(
+    tmp_path, drop_requirement
+):
+    store = make_store(tmp_path)
+    roles = ("SemanticPlanner", "QueryBuilder", "EvidenceVerifier", "AnswerComposer")
+    selected = Skill(
+        "chosen",
+        ["unmatched"],
+        {role: f"JOINT_{role}" for role in roles},
+        "sum values",
+    )
+    distractor = Skill(
+        "keyword_only",
+        ["sum"],
+        {"SemanticPlanner": "KEYWORD_RULE", "QueryBuilder": "KEYWORD_QUERY"},
+        "other use",
+    )
+    bundle = Bundle(
+        skills=[selected, distractor],
+        role_guidance={role: "GLOBAL_GUIDANCE" for role in roles},
+    )
+    draft = {
+        "tables": ["t0"],
+        "requirements": [{"id": "r1", "need": "sum"}, {"id": "r2", "need": "unit"}],
+        "skill_selection": [
+            {"skill_id": "chosen", "reason": "sum requested", "need_ids": ["r1"]}
+        ],
+    }
+    refined = {
+        "tables": ["t0"],
+        "requirements": draft["requirements"][:1]
+        if drop_requirement
+        else draft["requirements"],
+    }
+
+    class Local:
+        def __init__(self):
+            self.messages = []
+            self.responses = iter(
+                [
+                    draft,
+                    refined,
+                    {
+                        "queries": [
+                            {"sql": "SELECT SUM(CAST(c2 AS REAL)) FROM t0 WHERE _row>1"}
+                        ]
+                    },
+                    {"checks": [], "queries": []},
+                    "The total is 8.",
+                    {"revise_answer": True, "queries": []},
+                    "The total is 8 units.",
+                ]
+            )
+
+        def chat(self, messages, **kwargs):
+            self.messages.append(messages)
+            response = next(self.responses)
+            return {
+                "content": response
+                if isinstance(response, str)
+                else json.dumps(response),
+                "usage": {"prompt_tokens": 50, "completion_tokens": 20},
+            }
+
+    client = Local()
+    result = CooperativeAgent(client, bundle, aligned=True).solve(store, "sum?")
+    assert result["answer"] == "The total is 8 units."
+    assert result["budget"]["used_calls"] == 7
+    assert result["budget"]["unknown_usage"] == 0
+    calls = [step for step in result["trace"] if "input_hash" in step]
+    assert calls[0]["phase"] == "routing_draft" and calls[0]["memory_ids"] == []
+    assert "GLOBAL_GUIDANCE" not in client.messages[0][1]["content"]
+    assert calls[1]["phase"] == "selected_memory_plan"
+    assert calls[1]["memory_ids"] == ["chosen"]
+    expected = [] if drop_requirement else ["chosen"]
+    assert all(call["memory_ids"] == expected for call in calls[2:])
+    assert result["retrieved_skill_ids"] == expected
+    assert {
+        r["id"] for r in result["working_memory"]["current_contract"]["requirements"]
+    } == {"r1", "r2"}
+    if drop_requirement:
+        assert "GLOBAL_GUIDANCE" not in client.messages[2][1]["content"]
+    event = next(s for s in result["trace"] if s["role"] == "MemoryPlanning")
+    assert event["status"] == ("rejected" if drop_requirement else "accepted")
