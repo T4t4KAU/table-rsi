@@ -1,0 +1,59 @@
+{
+  "method": "paired cluster bootstrap percentile; descriptive, no multiple-comparison correction",
+  "replicates": 4000,
+  "seed": 20261108,
+  "runs": [
+    {
+      "path": "legacy_fixed_512_thinking",
+      "dialogs": 12,
+      "clusters": 12,
+      "turn_macro_coverage": 0.4849537037037037,
+      "cluster_bootstrap_95_ci": [
+        0.3148148148148148,
+        0.6597222222222222
+      ],
+      "gain_vs_first": 0.0,
+      "paired_gain_95_ci": [
+        0.0,
+        0.0
+      ],
+      "fully_covered_turn_rate": 0.25,
+      "full_point_bootstrap_95_ci": [
+        0.08333333333333333,
+        0.4583333333333333
+      ],
+      "full_point_gain_vs_first": 0.0,
+      "full_point_paired_gain_95_ci": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "path": "cooperative_baseline_1024_thinking",
+      "dialogs": 12,
+      "clusters": 12,
+      "turn_macro_coverage": 0.4270833333333333,
+      "cluster_bootstrap_95_ci": [
+        0.2708333333333333,
+        0.6006944444444443
+      ],
+      "gain_vs_first": -0.057870370370370405,
+      "paired_gain_95_ci": [
+        -0.15972222222222227,
+        0.034751157407407605
+      ],
+      "fully_covered_turn_rate": 0.16666666666666666,
+      "full_point_bootstrap_95_ci": [
+        0.0,
+        0.375
+      ],
+      "full_point_gain_vs_first": -0.08333333333333334,
+      "full_point_paired_gain_95_ci": [
+        -0.20833333333333334,
+        0.0
+      ]
+    }
+  ],
+  "stage": "engineering development; no teacher-induced policy applied yet",
+  "caution": "Different runtime and thinking caps: this is not an RSI-effect comparison. Model-judged scoring-point coverage is not human-verified accuracy. Only 24 development turns."
+}

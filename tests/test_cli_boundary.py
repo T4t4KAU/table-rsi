@@ -5,12 +5,14 @@ import pytest
 
 from tablersi import cli
 from tablersi.data import build_store
+from tablersi.memory import Bundle
 from tablersi.state import State
 
 
 @pytest.mark.parametrize("external_oracle", [False, True])
+@pytest.mark.parametrize("variant", ["direct", "cooperative"])
 def test_oracle_is_scorer_only_and_history_uses_predictions(
-    tmp_path, monkeypatch, external_oracle
+    tmp_path, monkeypatch, external_oracle, variant
 ):
     data = tmp_path / "data"
     data.mkdir()
@@ -78,8 +80,12 @@ def test_oracle_is_scorer_only_and_history_uses_predictions(
         "group": "g",
         "questions": ["First question", "Follow-up question"],
     }
-    records, report = cli.evaluate(a, State(), "direct", [task], tmp_path / "out")
+    state = Bundle() if variant == "cooperative" else State()
+    records, report = cli.evaluate(a, state, variant, [task], tmp_path / "out")
     assert judge.references == [["SECRET_ORACLE_1"], ["SECRET_ORACLE_2"]]
     assert "SECRET_ORACLE" not in json.dumps(client.requests)
-    assert "prediction_1" in json.dumps(client.requests[1])
+    first_turn_calls = records[0]["turns"][0]["budget"]["used_calls"]
+    assert f"prediction_{first_turn_calls}" in json.dumps(
+        client.requests[first_turn_calls]
+    )
     assert report["turns"] == 2

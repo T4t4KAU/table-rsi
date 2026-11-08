@@ -1,8 +1,13 @@
 # AgentMemory design
 
-**Status: proposed, not implemented.** The current `State.memory` only holds
-predefined abstract checks. This document specifies the intended replacement;
-it is not evidence of an implemented capability or measured improvement.
+**Status: partially implemented in the experimental cooperative runtime.**
+Legacy `State.memory` still holds predefined checks. `memory.Bundle` now provides
+immutable per-task snapshots, joint skills with role-specific views, keyword
+retrieval, provenance excluded from solver prompts, and whole-bundle versioning.
+The teacher can propose new abstract skills; search and independent audit gate
+promotion. Candidate skills are not individually verified repair programs.
+The richer evidence calibration, lifecycle, and contextual L2 described below
+remain research targets; implementation is not evidence of measured improvement.
 
 ## State and evidence
 

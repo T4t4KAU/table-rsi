@@ -31,7 +31,12 @@ def write(path, data):
 
 
 def clients(a):
-    local = Client(a.local_url, a.local_model, local=True)
+    local = Client(
+        a.local_url,
+        a.local_model,
+        local=True,
+        thinking_budget=getattr(a, "thinking_budget", 0),
+    )
     judge = Client(a.judge_url, a.judge_model, a.key_file, local=False)
     return local, Judge(judge, a.repo)
 
@@ -79,6 +84,7 @@ def evaluate(a, state, variant, tasks, out):
         "model": a.local_model,
         "judge": a.judge_model,
         "seed": a.seed,
+        "thinking_budget": getattr(a, "thinking_budget", 0),
         "provenance": provenance,
     }
     confighash = digest(config)
@@ -92,7 +98,12 @@ def evaluate(a, state, variant, tasks, out):
         file = out / (task["id"] + ".json")
         if file.exists():
             return json.loads(file.read_text())
-        agent = Agent(local, state, variant=variant)
+        if variant == "cooperative":
+            from .cooperative import CooperativeAgent
+
+            agent = CooperativeAgent(local, state)
+        else:
+            agent = Agent(local, state, variant=variant)
         history = []
         turns = []
         for i, q in enumerate(task["questions"]):
@@ -127,6 +138,8 @@ def evaluate(a, state, variant, tasks, out):
             "cluster": task["cluster"],
             "split": task["split"],
             "group": task["group"],
+            "previous_terminal_group": task.get("previous_terminal_group", False),
+            "previous_terminal_dialog": task.get("previous_terminal_dialog", False),
             "turns": turns,
         }
         write(file, d)

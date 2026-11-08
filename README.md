@@ -3,9 +3,11 @@
 TableRSI is a research prototype for tabular reasoning with a frozen local LLM,
 guarded read-only SQL search, and independently audited policy updates.
 
-**Status:** the solver, evaluation pipeline, bounded L1/L2 updates, and
-predeployment/deployment data partitioning are implemented. Teacher distillation,
-SFT/LoRA, automatic skill induction, and contextual AgentMemory are **planned**.
+**Status:** the legacy solver, evaluation pipeline, bounded L1/L2 updates, and
+predeployment/deployment data partitioning are implemented. An experimental
+cooperative solver now adds role-projected memory, cloud-teacher policy/skill
+induction, joint-bundle selection, and independent promotion audits. SFT/LoRA,
+causal role attribution, and contextual L2 remain **planned**.
 The recorded preliminary experiment did not demonstrate an RSI improvement:
 all candidate policy promotions were rejected, leaving fixed, L1, and L2 with
 identical final solver policies and memory. See
@@ -97,8 +99,10 @@ for deployment are stored separately from agent inputs.
 - [AgentMemory design and implementation roadmap](docs/AGENT_MEMORY.md)
 - [Current implementation and evidence limits](IMPLEMENTATION_NOTES.md)
 
-Partitioning does not generate teaching samples or train a model. These are
-separate next-stage tasks; the repo does not claim they have been completed.
+The new [cooperative experiment](docs/COOPERATIVE_STUDY.md) generates abstract
+policies and cooperative skills from designated training episodes. It keeps
+model weights frozen; this is prompt/memory teaching, not weight distillation.
+New experimental results must be reported separately from the legacy study.
 
 ## Repository layout
 

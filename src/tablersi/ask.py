@@ -22,13 +22,16 @@ def main():
         "--history",
         help="Optional JSON array of prior user/assistant messages; never evaluator outputs",
     )
-    p.add_argument(
+    snapshot = p.add_mutually_exclusive_group()
+    snapshot.add_argument(
         "--state", help="Committed policy/memory JSON; defaults to the fixed controller"
     )
+    snapshot.add_argument("--bundle", help="Released cooperative policy/memory bundle")
     p.add_argument("--local-url", default="http://127.0.0.1:31001/v1")
     p.add_argument("--local-model", default="tablersi-qwen3-8b")
     p.add_argument("--output", help="Optional result JSON with trace and token ledger")
     p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--thinking-budget", type=int)
     a = p.parse_args()
     question = a.question if a.question is not None else sys.stdin.read().strip()
     if not question:
@@ -39,11 +42,28 @@ def main():
         or not (store / "catalog.json").is_file()
     ):
         p.error("store must contain tables.sqlite and catalog.json")
-    state = State.load(a.state) if a.state else State()
     history = json.loads(Path(a.history).read_text()) if a.history else []
-    result = Agent(Client(a.local_url, a.local_model, local=True), state).solve(
-        store, question, history, a.seed
+    thinking = (
+        a.thinking_budget
+        if a.thinking_budget is not None
+        else (1024 if a.bundle else 0)
     )
+    if thinking < 0 or thinking >= 4096:
+        p.error("thinking budget must be in [0, 4096)")
+    client = Client(a.local_url, a.local_model, local=True, thinking_budget=thinking)
+    if a.bundle:
+        from .cooperative import CooperativeAgent
+        from .memory import Bundle
+
+        bundle = Bundle.load(a.bundle)
+        if bundle.status not in {"baseline", "promoted"}:
+            p.error(
+                "candidate/rejected bundles are not deployment releases; use the study evaluator"
+            )
+        agent = CooperativeAgent(client, bundle)
+    else:
+        agent = Agent(client, State.load(a.state) if a.state else State())
+    result = agent.solve(store, question, history, a.seed)
     if a.output:
         dest = Path(a.output)
         dest.parent.mkdir(parents=True, exist_ok=True)

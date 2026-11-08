@@ -51,10 +51,11 @@ class Budget:
 
 
 class Client:
-    def __init__(self, base_url, model, key_file=None, local=True):
+    def __init__(self, base_url, model, key_file=None, local=True, thinking_budget=0):
         self.base = base_url.rstrip("/")
         self.model = model
         self.local = local
+        self.thinking_budget = thinking_budget
         self.key = (
             Path(key_file).read_text().strip()
             if key_file
@@ -73,8 +74,15 @@ class Client:
         }
         if self.local:
             payload.update(
-                {"seed": seed, "chat_template_kwargs": {"enable_thinking": False}}
+                {
+                    "seed": seed,
+                    "chat_template_kwargs": {
+                        "enable_thinking": self.thinking_budget > 0
+                    },
+                }
             )
+            if self.thinking_budget:
+                payload["thinking_token_budget"] = self.thinking_budget
         else:
             payload["thinking"] = {"type": "disabled"}
         if json_mode:
