@@ -14,6 +14,7 @@ from .cli import evaluate, select, write
 from .memory import ROLES, Bundle, fingerprint, validate_teacher_abstraction
 from .model import Client, json_object
 from .observations import Observations
+from .paired_outcomes import paired_outcomes
 from .state import audit_gate
 
 OPERATORS = {
@@ -303,11 +304,24 @@ def search_and_audit(args):
         raise ValueError("Expected the three prespecified cooperative proposals")
     if any(b.parent != parent.hash for _, b in candidates):
         raise ValueError("Candidate is not derived from this incumbent")
-    _, base_summary = evaluate_stage(args, "search", parent, out / "search/baseline")
+    base_records, base_summary = evaluate_stage(
+        args, "search", parent, out / "search/baseline"
+    )
     board = [{"name": "baseline", "summary": base_summary, "hash": parent.hash}]
     for name, bundle in candidates:
-        _, summary = evaluate_stage(args, "search", bundle, out / "search" / name)
-        board.append({"name": name, "summary": summary, "hash": bundle.hash})
+        records, summary = evaluate_stage(args, "search", bundle, out / "search" / name)
+        try:
+            transitions = paired_outcomes(base_records, records)
+        except ValueError as exc:
+            transitions = {"unavailable": str(exc)}
+        board.append(
+            {
+                "name": name,
+                "summary": summary,
+                "hash": bundle.hash,
+                "paired_outcomes": transitions,
+            }
+        )
         write(out / "search_board.json", board)
     best = max(board, key=lambda x: rank(x["summary"]))
     if best["name"] == "baseline":
@@ -356,6 +370,7 @@ def search_and_audit(args):
         "full_point_gain": full_gain,
         "clean_usage_and_judging": clean,
         "finalist": commitment,
+        "paired_outcomes": paired_outcomes(incumbent, candidate) if clean else None,
     }
     write(out / "decision.json", decision)
     release = copy.deepcopy(finalist if accepted else parent)

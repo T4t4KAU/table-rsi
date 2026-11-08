@@ -332,3 +332,33 @@ for the controller's final review-and-repair pair. These observed control-flow
 and semantic failures motivate executable precondition checks and explicit
 metric definitions; they are not evidence that another natural-language rule
 or another verification call will necessarily improve accuracy.
+
+### Public methods and paired outcome reports
+
+`public_methods.json` records primary papers, official implementations, and
+the distinction between completed code and proposed adaptations. The proposed
+direction combines tool-checked metric contracts (informed by CRITIC and PAL),
+contrastive teaching experiences (ExpeL), and whole-bundle candidate search
+(adapted from GEPA). Multi-role changes remain eligible; no requirement for an
+isolated role to improve on its own is introduced.
+
+Two foundations are implemented: binding corrections must cite evidence with
+an explicit successful execution status, and candidate evaluation reports
+preservation, damage, and repair of full reference-point coverage separately.
+Successful execution is necessary for that binding change, but does not prove
+its semantics. Typed metric checks, contrastive teaching, and a GEPA-style
+candidate pool are not yet implemented.
+
+To analyze an existing paired run without generating answers or rejudging:
+
+```bash
+python -m tablersi.paired_outcomes \
+  --baseline path/to/baseline --candidate path/to/candidate \
+  --out path/to/paired_outcomes.json
+```
+
+The report rejects mismatched turns and invalid scores. It is descriptive,
+does not replace the audit gate, and is not an estimate of within-trajectory
+self-correction. On the completed v6 pair it records seven full-coverage turns
+preserved, four lost, one gained, and fourteen incomplete under both policies.
+The implemented guards and reports have not yet demonstrated an ACC gain.

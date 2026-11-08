@@ -1,0 +1,92 @@
+{
+  "date": "2026-11-09",
+  "scope": "公开一手文献与官方实现调研；适配方案与实际实现分开记录。",
+  "sources": [
+    {
+      "name": "CRITIC",
+      "venue": "ICLR 2024",
+      "paper": "https://arxiv.org/abs/2305.11738",
+      "code": "https://github.com/microsoft/ProphetNet/tree/master/CRITIC",
+      "finding": "通过外部工具反馈形成批评，再修正答案。",
+      "adaptation": "把统计口径、日期边界、分母、缺失前期值变成可执行检查；SQL 可执行仅作为执行状态。",
+      "limit": "本文未证明 TableRSI 收益，也不意味着工具执行成功就证明问题语义正确。",
+      "priority": "验证层：优先"
+    },
+    {
+      "name": "PAL",
+      "venue": "ICML 2023",
+      "paper": "https://proceedings.mlr.press/v202/gao23f.html",
+      "code": "https://github.com/reasoning-machines/pal",
+      "finding": "模型生成程序化推理步骤，运行时完成计算。",
+      "adaptation": "将累计水平增长、单期差分、单期增长分别编译为不同计算操作，保留输入证据与单位；前期值未知时输出未知。",
+      "limit": "已有 SQL 计算还不够。类型化契约是我们的适配设计；PAL 本身不保证列绑定或自然语言解释正确。",
+      "priority": "验证层：与 CRITIC 配套"
+    },
+    {
+      "name": "ExpeL",
+      "venue": "AAAI 2024",
+      "paper": "https://ojs.aaai.org/index.php/AAAI/article/view/29936",
+      "code": "https://github.com/LeapLabTHU/ExpeL",
+      "finding": "从同任务成功/失败对照和跨任务成功经历中抽取经验，并在推理时检索使用。",
+      "adaptation": "教学集同时保存“修好错误”和“保留正确结果”的轨迹；记忆条目保留触发条件、反例、联合动作、检查方式和来源。",
+      "limit": "自然语言经验仍可能误用。只用教学组形成经验，搜索/审计/部署标签不能进入教学输入。",
+      "priority": "AgentMemory：优先"
+    },
+    {
+      "name": "GEPA",
+      "venue": "公开论文与官方开源实现",
+      "paper": "https://arxiv.org/abs/2507.19457",
+      "code": "https://github.com/gepa-ai/gepa",
+      "finding": "用执行轨迹反馈提出候选，并保留在不同样本上有优势的策略，进行选择和合并。",
+      "adaptation": "把整个多角色记忆包作为联合候选，记录逐题结果与谱系；允许协同修改后才产生收益。",
+      "limit": "这是针对 TableRSI 的适配，不是已完成 GEPA 复现。候选池与验证集选择仍可能过拟合，最终保留一次独立审计。",
+      "priority": "部署前联合搜索：第二步"
+    },
+    {
+      "name": "Confidence v.s. Critique",
+      "venue": "ACL 2025",
+      "paper": "https://aclanthology.org/2025.acl-long.203/",
+      "code": "https://github.com/Zhe-Young/SelfCorrectDecompose",
+      "finding": "分别研究保持正确答案和修复错误答案的能力，以及二者之间的权衡。",
+      "adaptation": "已实现配对结果转移报告：全覆盖保持、全覆盖损伤、未全覆盖修复及净变化。",
+      "limit": "这里只借鉴评测分解，没有实现其 CCT 微调。跨策略比较是描述性统计，且“全覆盖”不等于人工确认正确。",
+      "priority": "评测：已落地"
+    },
+    {
+      "name": "Chain-of-Verification",
+      "venue": "Findings of ACL 2024",
+      "paper": "https://aclanthology.org/2024.findings-acl.212/",
+      "code": null,
+      "finding": "拆出核验问题，并独立回答以降低对草稿的依赖。",
+      "adaptation": "作为后续对照实验，核查原始单元格、范围与单位，避免沿着错误草稿重复判断。",
+      "limit": "已有单个日期案例中，简单隐藏计划没有稳定改善，因此不默认采用；独立提示也不等于独立正确性证据。",
+      "priority": "暂缓：作为消融"
+    },
+    {
+      "name": "When is Tree Search Useful for LLM Planning?",
+      "venue": "ACL 2024",
+      "paper": "https://aclanthology.org/2024.acl-long.738/",
+      "code": null,
+      "finding": "在论文考察的 SQL 与数学任务中，搜索收益高度依赖判别器质量。",
+      "adaptation": "先检验验证器可靠性和反馈质量，再考虑扩大搜索；不把更多路径当作默认增强。",
+      "limit": "论文的数值阈值只属于其实验设置，不当作 TableRSI 的通用定律。",
+      "priority": "暂缓：先修验证"
+    }
+  ],
+  "implemented": [
+    "列绑定修订只能引用明确执行成功的证据；失败或缺少执行状态的证据不能支撑修订。",
+    "联合候选搜索和审计增加配对结果转移报告；原先的晋升门槛不变。",
+    "82 项测试与 Ruff 通过；没有修改正在运行的冻结实验源码。"
+  ],
+  "not_yet_implemented": [
+    "端到端类型化指标契约、可执行语义检查及基于检查结果的修订提交。",
+    "同任务成功/失败对照教学与 GEPA 式联合候选池的完整适配。"
+  ],
+  "protocol": [
+    "工程修补与学习收益分开评测：旧运行时空记忆、新运行时空记忆、新运行时旧记忆、新运行时重新教学记忆。",
+    "使用同模型、同调用上限；报告实际调用、输入输出 token 和时延。教学仅用预先划分的教学组。",
+    "搜索候选允许多角色整体改变；不用单角色独立增益或逐题零回退作为硬性条件。",
+    "整题全覆盖率为主，同时报告覆盖率、损伤率、修复率和分组置信区间；不因均值改善掩盖退化。",
+    "保留失败结果和来源；独立审计与正式部署集继续封存，调研和单元测试不是 ACC 提升证据。"
+  ]
+}

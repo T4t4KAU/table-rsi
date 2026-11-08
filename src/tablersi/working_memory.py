@@ -25,6 +25,7 @@ class WorkingMemory:
 
     def apply(self, review, evidence):
         known = {e["id"] for e in evidence}
+        executed = {e["id"] for e in evidence if e.get("ok") is True}
         requirements = {
             r["id"]: r
             for r in self.contract.get("requirements", [])
@@ -65,7 +66,9 @@ class WorkingMemory:
                     or not isinstance(support, list)
                     or not support
                     or any(
-                        not isinstance(i, str) or i not in known or i in self.contested
+                        not isinstance(i, str)
+                        or i not in executed
+                        or i in self.contested
                         for i in support
                     )
                 ):

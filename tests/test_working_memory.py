@@ -5,8 +5,8 @@ def test_correction_replaces_binding_and_retires_wrong_entity_evidence():
     contract = {"requirements": [{"id": "r1", "binding": "wrong row"}]}
     memory = WorkingMemory(contract)
     evidence = [
-        {"id": "e1", "rows": [["wrong entity", 42]]},
-        {"id": "e2", "rows": [["right entity", 19]]},
+        {"id": "e1", "ok": True, "rows": [["wrong entity", 42]]},
+        {"id": "e2", "ok": True, "rows": [["right entity", 19]]},
     ]
     events = memory.apply(
         {
@@ -22,6 +22,20 @@ def test_correction_replaces_binding_and_retires_wrong_entity_evidence():
     assert [e["id"] for e in memory.active(evidence)] == ["e2"]
     assert len(events) == 2
     assert len(evidence) == 2
+
+
+def test_binding_change_requires_successful_external_execution():
+    memory = WorkingMemory({"requirements": [{"id": "r1", "binding": "original"}]})
+    review = {
+        "binding_corrections": [
+            {"need_id": "r1", "binding": "replacement", "evidence_ids": ["e2"]}
+        ]
+    }
+    for record in ({"id": "e2"}, {"id": "e2", "ok": False}, {"id": "e2", "ok": 1}):
+        assert not memory.apply(review, [record])
+        assert memory.contract["requirements"][0]["binding"] == "original"
+    assert memory.apply(review, [{"id": "e2", "ok": True, "rows": []}])
+    assert memory.contract["requirements"][0]["binding"] == "replacement"
 
 
 def test_unknown_evidence_and_malformed_fields_cannot_rebind():
