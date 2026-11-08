@@ -12,6 +12,7 @@ Python modules under `src/tablersi` are the supported library and CLI surface.
 | `download_model32.py` | Qwen3-32B default for the same downloader | `download` extra; explicit `--out` |
 | `compare_runs.py` | Paired cluster bootstrap over recorded runs | Completed compatible run directories |
 | `score_answer_revision.py` | Development-only paired scoring of drafts and final answers | Completed development run; scorer credentials |
+| `cooperative_trace_summary.py` | Count skill retrieval/projection and observed memory edits without causal claims | Recorded cooperative run |
 | `repair_probe.py` | Synthetic literal-repair/structural-abstention diagnostic | Local model endpoint; explicit `--out` |
 
 ## Cooperative study

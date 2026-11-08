@@ -103,6 +103,7 @@ def evaluate(a, state, variant, tasks, out):
             "cooperative_v2",
             "cooperative_v3",
             "cooperative_v4",
+            "cooperative_v5",
         }:
             from .cooperative import CooperativeAgent
 
@@ -112,6 +113,7 @@ def evaluate(a, state, variant, tasks, out):
                 reconciled=variant == "cooperative_v2",
                 replanned=variant == "cooperative_v3",
                 patched=variant == "cooperative_v4",
+                routed=variant == "cooperative_v5",
             )
         else:
             agent = Agent(local, state, variant=variant)

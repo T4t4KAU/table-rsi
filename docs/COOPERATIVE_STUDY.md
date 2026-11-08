@@ -162,6 +162,43 @@ nonoverlapping anchors and available evidence; untouched text is preserved.
 These checks establish structural validity, not semantic correctness. Each
 variant needs its own frozen run and matched comparison.
 
+Completed Qwen3.6-35B development results are recorded in
+`experiments/cooperative_v2/development_results.json`: v1/v2/v3/v4 all-point
+coverage rates were 8/24, 7/24, 10/24, and 7/24 respectively. These are selected
+development runs with empty learned memory, not deployment or RSI results.
+No semantic `requirement_revision` event actually occurred in the v3 run;
+its improvement cannot be attributed specifically to that implemented operation.
+The trace summaries record observed edits separately from supported capabilities.
+
+The same first planner prompt and nominal request seed also produced different
+text in all 12 v3-v4 dialog pairs. Online serving was not text-deterministic in
+these runs; its exact source has not been isolated. Cluster bootstrap intervals
+do not account for this generation variability or development selection. Small
+gains need repeated comparisons before mechanism attribution.
+
+## Semantic memory routing experiment (v5)
+
+A label-free check of the 26 search questions found a concrete retrieval failure:
+the three instructional bundles retrieved skills on 0/10 English turns each;
+one bundle retrieved none on any of the 26 turns. Its global guidance still
+entered prompts, but its conditional skills did not. Retrieval keywords often
+described internal method terminology rather than ordinary user requests.
+
+The v5 runtime therefore gives the existing planner a bounded index of skill
+applicability, exclusions, and planning hints. The planner proposes at most
+three known skill IDs linked to its requirement IDs; downstream roles receive
+the selected bundle's corresponding full role views. Provenance is excluded.
+Malformed selections fall back to keyword retrieval; an explicit empty selection
+is respected. No extra model call is added, although prompt tokens increase.
+The index is abridged, and model-proposed applicability is not a formal guarantee.
+
+With empty memory, v5 keeps the v3 prompts and control flow. It still receives a
+fresh matched baseline for the feedback-teaching search. Initial v3 instructional
+results and the v5 feedback/routing experiment remain distinct; their comparison
+alone does not isolate feedback from routing. Only same-runtime empty-memory
+versus taught-memory comparisons test the learned bundle's contribution. All
+searches stop before a separately committed, single-finalist independent audit.
+
 ## Expanded teacher-group curriculum
 
 `python -m tablersi.curriculum` uses all dialogs within the original 17

@@ -34,7 +34,7 @@ def main():
     p.add_argument("--thinking-budget", type=int)
     p.add_argument(
         "--solver-version",
-        choices=["v1", "v2", "v3", "v4"],
+        choices=["v1", "v2", "v3", "v4", "v5"],
         default="v1",
         help="Cooperative runtime matching the frozen release experiment",
     )
@@ -75,6 +75,7 @@ def main():
             reconciled=a.solver_version == "v2",
             replanned=a.solver_version == "v3",
             patched=a.solver_version == "v4",
+            routed=a.solver_version == "v5",
         )
     else:
         agent = Agent(client, State.load(a.state) if a.state else State())

@@ -1,0 +1,27 @@
+{
+  "scope": "Observed events only. Retrieval/projection does not establish application, correctness, or causal benefit.",
+  "complete": true,
+  "dialogs": 12,
+  "turns": 24,
+  "turns_with_retrieved_skills": 0,
+  "retrieved_turn_counts": {},
+  "projected_role_call_counts": {},
+  "role_calls": {
+    "SemanticPlanner": 24,
+    "QueryBuilder": 24,
+    "EvidenceVerifier": 52,
+    "AnswerComposer": 26
+  },
+  "working_memory_events": {
+    "contest": 8,
+    "binding_correction": 3,
+    "requirement_revision": 3
+  },
+  "answer_patch_outcomes": {
+    "applied": 1,
+    "invalid text or evidence support": 1
+  },
+  "errors": {
+    "sql_failure": 1
+  }
+}

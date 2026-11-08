@@ -1,0 +1,20 @@
+{
+  "complete_answer": {
+    "English_turns": 10,
+    "English_with_retrieval": 0,
+    "Chinese_turns": 16,
+    "Chinese_with_retrieval": 0
+  },
+  "binding_evidence": {
+    "English_turns": 10,
+    "English_with_retrieval": 0,
+    "Chinese_turns": 16,
+    "Chinese_with_retrieval": 12
+  },
+  "cooperative_memory": {
+    "English_turns": 10,
+    "English_with_retrieval": 0,
+    "Chinese_turns": 16,
+    "Chinese_with_retrieval": 4
+  }
+}

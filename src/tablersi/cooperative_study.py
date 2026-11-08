@@ -384,7 +384,7 @@ def main():
     parser.add_argument("--local-model", default="tablersi-qwen3-32b")
     parser.add_argument("--thinking-budget", type=int, default=1024)
     parser.add_argument(
-        "--solver-version", choices=["v1", "v2", "v3", "v4"], default="v1"
+        "--solver-version", choices=["v1", "v2", "v3", "v4", "v5"], default="v1"
     )
     parser.add_argument("--judge-url", default="https://api.deepseek.com")
     parser.add_argument("--judge-model", default="deepseek-flash")

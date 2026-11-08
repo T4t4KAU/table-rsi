@@ -46,13 +46,15 @@ class CooperativeAgent:
         reconciled=False,
         replanned=False,
         patched=False,
+        routed=False,
     ):
         self.client = client
         self.bundle = copy.deepcopy(bundle).validate()
         self.max_calls = max_calls
-        self.reconciled = reconciled or replanned or patched
-        self.replanned = replanned or patched
+        self.reconciled = reconciled or replanned or patched or routed
+        self.replanned = replanned or patched or routed
         self.patched = patched
+        self.routed = routed
         self.dialog_contract = None
 
     def solve(self, store, question, history=None, seed=42):
@@ -77,7 +79,9 @@ class CooperativeAgent:
                 "elapsed_s": time.monotonic() - started,
                 "state_version": self.bundle.version,
                 "bundle_hash": self.bundle.hash,
-                "variant": "cooperative_v4"
+                "variant": "cooperative_v5"
+                if self.routed
+                else "cooperative_v4"
                 if self.patched
                 else "cooperative_v3"
                 if self.replanned
@@ -143,6 +147,14 @@ class CooperativeAgent:
                 prompt += "\n协作交接补充契约：\n" + RECONCILED_CONTRACTS[role]
             if self.replanned:
                 prompt += "\n可修订语义契约：\n" + REPLANNED_CONTRACTS[role]
+            if self.routed and self.bundle.skills and role == "SemanticPlanner":
+                prompt += (
+                    "\n从available_joint_skills按当前用户需求的语义选择零至三项适用技能，不依赖字面关键词或语言一致。"
+                    "先检查适用条件和排除条件，将所选技能的规划提示落实到对应requirements；不适用则不选。"
+                    "每个选择理由须指出当前问题或原始观察中触发该技能特有条件的线索，不可仅因都涉及汇总、比较等通用功能就选；条件尚无依据时不强行套用。"
+                    '在计划JSON增加skill_selection:[{"skill_id":"已知技能ID","reason":"适用理由","need_ids":["已有需求ID"]}]。'
+                    "选择将作为一个整体传给后续所有角色；不得臆造技能ID。"
+                )
             if patch_mode:
                 prompt += (
                     "\n本次是内部答案编辑模式，以下JSON协议替代普通自然语言输出。"
@@ -236,7 +248,22 @@ class CooperativeAgent:
             return count
 
         overview = observations.render(query_context, max_chars=18000)
-        contract = call("SemanticPlanner", {}, overview) or {}
+        planner_view = (
+            {"available_joint_skills": self.bundle.routing_index()}
+            if self.routed and self.bundle.skills
+            else {}
+        )
+        contract = call("SemanticPlanner", planner_view, overview) or {}
+        if self.routed and self.bundle.skills:
+            selected, routing = self.bundle.route(contract, selected)
+            trace.append(
+                {
+                    "role": "MemoryRouter",
+                    "selected_skill_ids": [skill.id for skill in selected],
+                    "semantic_status": "Model-proposed applicability; not oracle verified",
+                    **routing,
+                }
+            )
         if self.reconciled:
             working_memory = WorkingMemory(
                 contract, allow_requirement_revisions=self.replanned

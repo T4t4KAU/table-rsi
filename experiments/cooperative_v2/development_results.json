@@ -1,0 +1,402 @@
+{
+  "method": "paired cluster bootstrap percentile; descriptive, no multiple-comparison correction",
+  "replicates": 4000,
+  "seed": 20261108,
+  "runs": [
+    {
+      "path": "v1_base",
+      "dialogs": 12,
+      "clusters": 12,
+      "turn_macro_coverage": 0.5729166666666666,
+      "cluster_bootstrap_95_ci": [
+        0.38888888888888884,
+        0.7569444444444443
+      ],
+      "gain_vs_first": 0.0,
+      "paired_gain_95_ci": [
+        0.0,
+        0.0
+      ],
+      "fully_covered_turn_rate": 0.3333333333333333,
+      "full_point_bootstrap_95_ci": [
+        0.125,
+        0.5416666666666666
+      ],
+      "full_point_gain_vs_first": 0.0,
+      "full_point_paired_gain_95_ci": [
+        0.0,
+        0.0
+      ],
+      "summary": {
+        "dialogs": 12,
+        "turns": 24,
+        "judge_failures": 0,
+        "turn_macro_coverage": 0.5729166666666666,
+        "dialog_macro_coverage": 0.5729166666666666,
+        "micro_coverage": 0.6153846153846154,
+        "fully_covered_turn_rate": 0.3333333333333333,
+        "local_model_calls": 99,
+        "local_input_tokens": 596008,
+        "local_output_tokens": 325156,
+        "database_calls": 63,
+        "unknown_model_usage_calls": 0,
+        "successful_queries": 63,
+        "failed_queries": 0,
+        "judge_input_tokens": 26198,
+        "judge_output_tokens": 5386,
+        "mean_turn_latency_s": 133.0773734730998
+      },
+      "frozen_config_sha256": "dbef26ead8fa95c0a1a7eb480ab3e81c039619482e0d9329de0a698d01bc78cc",
+      "per_dialog_coverage": {
+        "tab0037": [
+          0.0,
+          0.5
+        ],
+        "tab0062": [
+          1.0,
+          1.0
+        ],
+        "tab0109": [
+          0.6666666666666666,
+          1.0
+        ],
+        "tab0120": [
+          0.0,
+          0.0
+        ],
+        "tab0130": [
+          1.0,
+          0.5
+        ],
+        "tab0142": [
+          0.5,
+          0.25
+        ],
+        "tab0150": [
+          1.0,
+          0.6666666666666666
+        ],
+        "tab0151": [
+          0.3333333333333333,
+          0.0
+        ],
+        "tab0250": [
+          0.5,
+          0.5
+        ],
+        "tab0265": [
+          0.8333333333333334,
+          0.0
+        ],
+        "tab0268": [
+          1.0,
+          1.0
+        ],
+        "tab0316": [
+          1.0,
+          0.5
+        ]
+      }
+    },
+    {
+      "path": "v2_reconciled",
+      "dialogs": 12,
+      "clusters": 12,
+      "turn_macro_coverage": 0.5243055555555555,
+      "cluster_bootstrap_95_ci": [
+        0.32291666666666663,
+        0.7291666666666666
+      ],
+      "gain_vs_first": -0.04861111111111116,
+      "paired_gain_95_ci": [
+        -0.09722222222222227,
+        -0.01041666666666663
+      ],
+      "fully_covered_turn_rate": 0.2916666666666667,
+      "full_point_bootstrap_95_ci": [
+        0.08333333333333333,
+        0.5010416666666705
+      ],
+      "full_point_gain_vs_first": -0.04166666666666663,
+      "full_point_paired_gain_95_ci": [
+        -0.12500000000000003,
+        0.0
+      ],
+      "summary": {
+        "dialogs": 12,
+        "turns": 24,
+        "judge_failures": 0,
+        "turn_macro_coverage": 0.5243055555555556,
+        "dialog_macro_coverage": 0.5243055555555556,
+        "micro_coverage": 0.5494505494505495,
+        "fully_covered_turn_rate": 0.2916666666666667,
+        "local_model_calls": 131,
+        "local_input_tokens": 953060,
+        "local_output_tokens": 469474,
+        "database_calls": 73,
+        "unknown_model_usage_calls": 0,
+        "successful_queries": 73,
+        "failed_queries": 0,
+        "judge_input_tokens": 27191,
+        "judge_output_tokens": 5496,
+        "mean_turn_latency_s": 171.18691656554196
+      },
+      "frozen_config_sha256": "8c0d5498309b0c7580655b7440556767d48c9ccb790b30b6ed811498186d7ac6",
+      "per_dialog_coverage": {
+        "tab0037": [
+          0.0,
+          0.0
+        ],
+        "tab0062": [
+          1.0,
+          1.0
+        ],
+        "tab0109": [
+          0.6666666666666666,
+          0.75
+        ],
+        "tab0120": [
+          0.0,
+          0.0
+        ],
+        "tab0130": [
+          1.0,
+          0.5
+        ],
+        "tab0142": [
+          0.25,
+          0.25
+        ],
+        "tab0150": [
+          1.0,
+          0.6666666666666666
+        ],
+        "tab0151": [
+          0.3333333333333333,
+          0.0
+        ],
+        "tab0250": [
+          0.5,
+          0.5
+        ],
+        "tab0265": [
+          0.6666666666666666,
+          0.0
+        ],
+        "tab0268": [
+          1.0,
+          1.0
+        ],
+        "tab0316": [
+          1.0,
+          0.5
+        ]
+      }
+    },
+    {
+      "path": "v3_replanned",
+      "dialogs": 12,
+      "clusters": 12,
+      "turn_macro_coverage": 0.5972222222222222,
+      "cluster_bootstrap_95_ci": [
+        0.375,
+        0.8055555555555555
+      ],
+      "gain_vs_first": 0.02430555555555558,
+      "paired_gain_95_ci": [
+        -0.041666666666666685,
+        0.09027777777777768
+      ],
+      "fully_covered_turn_rate": 0.4166666666666667,
+      "full_point_bootstrap_95_ci": [
+        0.16666666666666666,
+        0.6666666666666666
+      ],
+      "full_point_gain_vs_first": 0.08333333333333337,
+      "full_point_paired_gain_95_ci": [
+        0.0,
+        0.20833333333333331
+      ],
+      "summary": {
+        "dialogs": 12,
+        "turns": 24,
+        "judge_failures": 0,
+        "turn_macro_coverage": 0.5972222222222222,
+        "dialog_macro_coverage": 0.5972222222222222,
+        "micro_coverage": 0.6263736263736264,
+        "fully_covered_turn_rate": 0.4166666666666667,
+        "local_model_calls": 126,
+        "local_input_tokens": 921081,
+        "local_output_tokens": 426857,
+        "database_calls": 73,
+        "unknown_model_usage_calls": 0,
+        "successful_queries": 72,
+        "failed_queries": 1,
+        "judge_input_tokens": 26728,
+        "judge_output_tokens": 5444,
+        "mean_turn_latency_s": 175.10107813143986
+      },
+      "frozen_config_sha256": "ab81efad11bf38c92874965d3731304d55006b5149f599e5b8056fc83e15702f",
+      "per_dialog_coverage": {
+        "tab0037": [
+          0.0,
+          0.0
+        ],
+        "tab0062": [
+          1.0,
+          1.0
+        ],
+        "tab0109": [
+          1.0,
+          1.0
+        ],
+        "tab0120": [
+          0.0,
+          0.0
+        ],
+        "tab0130": [
+          1.0,
+          0.5
+        ],
+        "tab0142": [
+          0.5,
+          0.5
+        ],
+        "tab0150": [
+          1.0,
+          0.6666666666666666
+        ],
+        "tab0151": [
+          0.3333333333333333,
+          0.0
+        ],
+        "tab0250": [
+          0.5,
+          0.5
+        ],
+        "tab0265": [
+          0.8333333333333334,
+          0.0
+        ],
+        "tab0268": [
+          1.0,
+          1.0
+        ],
+        "tab0316": [
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "path": "v4_answer_patch",
+      "dialogs": 12,
+      "clusters": 12,
+      "turn_macro_coverage": 0.5243055555555555,
+      "cluster_bootstrap_95_ci": [
+        0.3333333333333333,
+        0.7152777777777777
+      ],
+      "gain_vs_first": -0.04861111111111116,
+      "paired_gain_95_ci": [
+        -0.10416666666666663,
+        0.0
+      ],
+      "fully_covered_turn_rate": 0.2916666666666667,
+      "full_point_bootstrap_95_ci": [
+        0.08333333333333333,
+        0.5416666666666666
+      ],
+      "full_point_gain_vs_first": -0.04166666666666663,
+      "full_point_paired_gain_95_ci": [
+        -0.125,
+        0.0
+      ],
+      "summary": {
+        "dialogs": 12,
+        "turns": 24,
+        "judge_failures": 0,
+        "turn_macro_coverage": 0.5243055555555556,
+        "dialog_macro_coverage": 0.5243055555555556,
+        "micro_coverage": 0.5714285714285714,
+        "fully_covered_turn_rate": 0.2916666666666667,
+        "local_model_calls": 126,
+        "local_input_tokens": 880987,
+        "local_output_tokens": 445925,
+        "database_calls": 74,
+        "unknown_model_usage_calls": 0,
+        "successful_queries": 73,
+        "failed_queries": 1,
+        "judge_input_tokens": 26563,
+        "judge_output_tokens": 5919,
+        "mean_turn_latency_s": 155.1286698889841
+      },
+      "frozen_config_sha256": "2751f63770e2c7fee27ccb703fde23de31744af7b5106e273e938e1620d79631",
+      "per_dialog_coverage": {
+        "tab0037": [
+          0.0,
+          0.0
+        ],
+        "tab0062": [
+          1.0,
+          1.0
+        ],
+        "tab0109": [
+          0.3333333333333333,
+          1.0
+        ],
+        "tab0120": [
+          0.0,
+          0.0
+        ],
+        "tab0130": [
+          1.0,
+          0.5
+        ],
+        "tab0142": [
+          0.25,
+          0.5
+        ],
+        "tab0150": [
+          0.6666666666666666,
+          0.6666666666666666
+        ],
+        "tab0151": [
+          0.3333333333333333,
+          0.0
+        ],
+        "tab0250": [
+          0.5,
+          0.5
+        ],
+        "tab0265": [
+          0.8333333333333334,
+          0.0
+        ],
+        "tab0268": [
+          1.0,
+          1.0
+        ],
+        "tab0316": [
+          1.0,
+          0.5
+        ]
+      }
+    }
+  ],
+  "scope": "Completed engineering development only; no learned memory; no deployment accuracy or RSI gain claim.",
+  "model": "Qwen3.6-35B-A3B-FP8",
+  "thinking_budget": 4096,
+  "generation_limit": 8192,
+  "max_model_calls": 7,
+  "judge": "deepseek-flash (thinking disabled)",
+  "interpretation": "v3 is best on these 24 selected development turns. v2 and v4 regress versus v1. Intervals are descriptive after development-driven selection, not independent confirmatory inference. Wall latency is affected by concurrent jobs.",
+  "repeatability_caveat": {
+    "comparison": "v3 vs v4 first SemanticPlanner call, before any answer-patch behavior",
+    "identical_input_hashes": 12,
+    "different_response_texts": 12,
+    "same_nominal_request_seed": true,
+    "interpretation": "Fixed seed did not make these online serving runs text-identical. Development differences include generation variability; repeats are needed before attributing small gains to a mechanism. The exact source of nondeterminism has not been isolated.",
+    "documentation": "https://docs.vllm.ai/en/latest/features/batch_invariance/"
+  }
+}

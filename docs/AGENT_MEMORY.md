@@ -14,6 +14,11 @@ The v3 variant permits typed revisions to formulas and metric definitions when
 linked to successful observed evidence. The v4 variant can propagate corrections
 as literal answer edits, preserving unaffected text. These remain model-proposed
 semantic changes; their structural checks cannot certify answer correctness.
+The v5 planner can route skills by semantic applicability across languages,
+using a bounded index in its existing call. It records the selected skill IDs
+and their requirement links, then projects that selection to downstream roles.
+This is model-proposed routing, not a proof that selected skills are applicable
+or beneficial. Empty memory retains the v3 behavior.
 The richer evidence calibration, lifecycle, and contextual L2 described below
 remain research targets; implementation is not evidence of measured improvement.
 

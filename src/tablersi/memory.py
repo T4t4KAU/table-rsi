@@ -113,6 +113,74 @@ class Bundle:
             ],
         }
 
+    def routing_index(self):
+        """Expose a bounded semantic index, excluding provenance and other roles."""
+        return [
+            {
+                "id": skill.id,
+                "applicability": skill.applicability[:240],
+                "exclusions": skill.exclusions[:120],
+                "planner_hint": skill.role_views.get("SemanticPlanner", "")[:240],
+                "index_status": "Abridged routing hint; full role views follow selection",
+            }
+            for skill in self.skills
+        ]
+
+    def route(self, contract, fallback, limit=3):
+        """Validate model-proposed routing against known skills and requirements."""
+        proposed = contract.get("skill_selection")
+        if not isinstance(proposed, list):
+            return fallback[:limit], {
+                "mode": "keyword_fallback",
+                "reason": "missing selection",
+            }
+        if not proposed:
+            return [], {"mode": "semantic_selection", "decisions": []}
+        requirements = contract.get("requirements", [])
+        known_needs = (
+            {
+                r["id"]
+                for r in requirements
+                if isinstance(r, dict) and isinstance(r.get("id"), str)
+            }
+            if isinstance(requirements, list)
+            else set()
+        )
+        known = {skill.id: skill for skill in self.skills}
+        selected, decisions, seen = [], [], set()
+        for item in proposed[:16]:
+            if not isinstance(item, dict):
+                continue
+            ident, reason, needs = (
+                item.get("skill_id"),
+                item.get("reason"),
+                item.get("need_ids"),
+            )
+            if (
+                not isinstance(ident, str)
+                or ident not in known
+                or ident in seen
+                or not isinstance(reason, str)
+                or not reason.strip()
+                or not isinstance(needs, list)
+                or not needs
+                or any(not isinstance(n, str) or n not in known_needs for n in needs)
+            ):
+                continue
+            selected.append(known[ident])
+            seen.add(ident)
+            decisions.append(
+                {"skill_id": ident, "reason": reason[:400], "need_ids": needs[:12]}
+            )
+            if len(selected) == limit:
+                break
+        if not selected:
+            return fallback[:limit], {
+                "mode": "keyword_fallback",
+                "reason": "invalid selection",
+            }
+        return selected, {"mode": "semantic_selection", "decisions": decisions}
+
 
 def validate_teacher_abstraction(bundle):
     """Reject obvious answer memorization; this is not a proof of abstraction."""

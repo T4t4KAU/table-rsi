@@ -12,7 +12,14 @@ from tablersi.state import State
 @pytest.mark.parametrize("external_oracle", [False, True])
 @pytest.mark.parametrize(
     "variant",
-    ["direct", "cooperative", "cooperative_v2", "cooperative_v3", "cooperative_v4"],
+    [
+        "direct",
+        "cooperative",
+        "cooperative_v2",
+        "cooperative_v3",
+        "cooperative_v4",
+        "cooperative_v5",
+    ],
 )
 def test_oracle_is_scorer_only_and_history_uses_predictions(
     tmp_path, monkeypatch, external_oracle, variant

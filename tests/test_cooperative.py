@@ -328,3 +328,105 @@ def test_evidence_linked_answer_patch_preserves_other_claims(tmp_path):
     assert result["budget"]["unknown_usage"] == 0
     assert result["trace"][-1]["role"] == "AnswerPatch"
     assert result["trace"][-1]["applied"]
+
+
+def test_semantic_routing_activates_cross_language_joint_skill_without_extra_call(
+    tmp_path,
+):
+    store = make_store(tmp_path)
+    skill = Skill(
+        "stock_flow",
+        ["库存"],
+        {
+            "SemanticPlanner": "Compare stock with flow.",
+            "QueryBuilder": "ROUTED_QUERY_INSTRUCTION",
+            "EvidenceVerifier": "ROUTED_CHECK_INSTRUCTION",
+            "AnswerComposer": "ROUTED_ANSWER_INSTRUCTION",
+        },
+        "Compare inventory risk using stock and outflow.",
+        provenance=[{"private": "SECRET_TEACHER_REFERENCE"}],
+    )
+    bundle = Bundle(skills=[skill])
+    assert not bundle.retrieve("Compare inventory risk.")
+
+    class Local:
+        def __init__(self):
+            self.messages = []
+            self.responses = iter(
+                [
+                    {
+                        "tables": ["t0"],
+                        "requirements": [{"id": "r1", "need": "risk"}],
+                        "skill_selection": [
+                            {
+                                "skill_id": "stock_flow",
+                                "reason": "inventory and flow are relevant",
+                                "need_ids": ["r1"],
+                            }
+                        ],
+                    },
+                    {"queries": []},
+                    {"checks": [], "queries": []},
+                    "The available table does not record stock or outflow.",
+                    {"checks": [], "queries": [], "revise_answer": False},
+                ]
+            )
+
+        def chat(self, messages, **kwargs):
+            self.messages.append(messages)
+            value = next(self.responses)
+            return {
+                "content": value if isinstance(value, str) else json.dumps(value),
+                "usage": {"prompt_tokens": 50, "completion_tokens": 20},
+            }
+
+    client = Local()
+    result = CooperativeAgent(client, bundle, routed=True).solve(
+        store, "Compare inventory risk."
+    )
+    assert result["budget"]["used_calls"] == 5
+    assert result["retrieved_skill_ids"] == ["stock_flow"]
+    assert "ROUTED_QUERY_INSTRUCTION" in client.messages[1][1]["content"]
+    assert "ROUTED_CHECK_INSTRUCTION" in client.messages[2][1]["content"]
+    assert "ROUTED_ANSWER_INSTRUCTION" in client.messages[3][1]["content"]
+    assert "SECRET_TEACHER_REFERENCE" not in json.dumps(client.messages)
+    assert any(t.get("mode") == "semantic_selection" for t in result["trace"])
+
+
+def test_semantic_router_rejects_unknown_ids_and_unlinked_requirements():
+    skill = Skill("s", ["x"], {"SemanticPlanner": "p", "QueryBuilder": "q"}, "a")
+    bundle = Bundle(skills=[skill])
+    contract = {
+        "requirements": [{"id": "r1"}],
+        "skill_selection": [
+            {"skill_id": "unknown", "reason": "r", "need_ids": ["r1"]},
+            {"skill_id": "s", "reason": "r", "need_ids": ["unknown_need"]},
+        ],
+    }
+    selected, event = bundle.route(contract, [])
+    assert selected == [] and event["mode"] == "keyword_fallback"
+    contract["skill_selection"] = []
+    selected, event = bundle.route(contract, [skill])
+    assert selected == [] and event["mode"] == "semantic_selection"
+
+
+def test_router_empty_memory_preserves_v3_prompts_and_call_budget(tmp_path):
+    store = make_store(tmp_path)
+
+    class Local:
+        def __init__(self):
+            self.messages = []
+
+        def chat(self, messages, **kwargs):
+            self.messages.append(messages)
+            return {
+                "content": "{}" if kwargs.get("json_mode") else "A has value 3.",
+                "usage": {"prompt_tokens": 20, "completion_tokens": 10},
+            }
+
+    old, new = Local(), Local()
+    a = CooperativeAgent(old, Bundle(), replanned=True).solve(store, "Value?")
+    b = CooperativeAgent(new, Bundle(), routed=True).solve(store, "Value?")
+    assert old.messages == new.messages
+    assert a["budget"] == b["budget"]
+    assert a["answer"] == b["answer"]
