@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 import sqlite3
+from copy import deepcopy
 from pathlib import Path
 
 
@@ -84,8 +85,49 @@ class Observations:
         return header + "\n".join(chunks)
 
 
+def _trim_evidence_rows(records, max_chars):
+    """Keep the established row trimming order; signal metadata-only overflow."""
+    while len(json.dumps(records, ensure_ascii=False, default=str)) > max_chars:
+        longest = max(
+            records, key=lambda r: len(json.dumps(r.get("rows", []))), default=None
+        )
+        if longest is None or not longest.get("rows"):
+            return False
+        longest["rows"].pop()
+        longest["prompt_rows_omitted"] = longest.get("prompt_rows_omitted", 0) + 1
+    return True
+
+
+def _compact_evidence_metadata(records, max_chars):
+    """Omit whole optional fields explicitly, reserving space for result rows."""
+    while True:
+        metadata = [{**record, "rows": []} for record in records]
+        size = len(json.dumps(metadata, ensure_ascii=False, default=str))
+        if size <= max_chars // 2:
+            return
+        candidates = [
+            (len(json.dumps(record[key], ensure_ascii=False, default=str)), i, key)
+            for i, record in enumerate(records)
+            for key in ("sql", "purpose", "error", "columns")
+            if key in record
+        ]
+        if not candidates:
+            if size > max_chars:
+                raise ValueError("Evidence budget too small for identities/status")
+            return
+        _, index, key = max(candidates)
+        record = records[index]
+        del record[key]
+        omitted = record.setdefault("prompt_fields_omitted", [])
+        omitted.append(key)
+        if key == "columns":
+            # Never show positional values after dropping their column labels.
+            record["rows"] = []
+            omitted.append("rows")
+
+
 def evidence_text(evidence, max_chars=18000):
-    """Bound complete records, not the tail of a serialized JSON string."""
+    """Bound prompt records without changing the authoritative execution trace."""
     output = []
     for item in evidence:
         record = {
@@ -96,12 +138,12 @@ def evidence_text(evidence, max_chars=18000):
         }
         record["rows"] = list(record.get("rows", []))
         output.append(record)
-    while len(json.dumps(output, ensure_ascii=False, default=str)) > max_chars:
-        longest = max(
-            output, key=lambda r: len(json.dumps(r.get("rows", []))), default=None
-        )
-        if longest is None or not longest.get("rows"):
-            raise ValueError("Evidence metadata exceeds budget")
-        longest["rows"].pop()
-        longest["prompt_rows_omitted"] = longest.get("prompt_rows_omitted", 0) + 1
+    original = deepcopy(output)
+    if not _trim_evidence_rows(output, max_chars):
+        # The old path has removed every row. Restore results before dropping
+        # oversized metadata, so long SQL does not erase the useful evidence.
+        output = original
+        _compact_evidence_metadata(output, max_chars)
+        if not _trim_evidence_rows(output, max_chars):
+            raise ValueError("Evidence budget too small for identities/status")
     return json.dumps(output, ensure_ascii=False, default=str)

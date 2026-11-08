@@ -129,6 +129,61 @@ def test_evidence_trimming_preserves_json_and_first_result():
     assert len(items[0]["rows"]) == 30
 
 
+def test_long_sql_metadata_preserves_results_and_original_trace():
+    items = [
+        {
+            "id": f"e{i}",
+            "ok": True,
+            "sql": "SELECT " + "x" * 5900,
+            "columns": ["total"],
+            "rows": [[i + 10]],
+            "truncated": False,
+        }
+        for i in range(4)
+    ]
+    before = json.dumps(items)
+    rendered = evidence_text(items, max_chars=1600)
+    records = json.loads(rendered)
+    assert len(rendered) <= 1600
+    assert [record["id"] for record in records] == [f"e{i}" for i in range(4)]
+    assert [record["rows"] for record in records] == [[[i + 10]] for i in range(4)]
+    assert all(record["ok"] and not record["truncated"] for record in records)
+    assert all("sql" in record["prompt_fields_omitted"] for record in records)
+    assert all("sql" not in record for record in records)
+    assert json.dumps(items) == before
+
+
+def test_oversized_column_labels_never_leave_unlabelled_result_values():
+    items = [
+        {
+            "id": "e1",
+            "ok": False,
+            "error": "large diagnostic " * 500,
+            "columns": ["column " * 1000],
+            "rows": [[42]],
+        }
+    ]
+    before = json.dumps(items)
+    rendered = evidence_text(items, max_chars=500)
+    record = json.loads(rendered)[0]
+    assert len(rendered) <= 500
+    assert record["id"] == "e1" and record["ok"] is False
+    assert set(record["prompt_fields_omitted"]) == {"error", "columns", "rows"}
+    assert record["rows"] == [] and "columns" not in record
+    assert json.dumps(items) == before
+
+
+def test_evidence_normal_path_is_unchanged():
+    items = [{"id": "e1", "ok": True, "rows": [[1], [2], [3]]}]
+    expected = [{"id": "e1", "ok": True, "rows": [[1], [2]], "prompt_rows_omitted": 1}]
+    budget = len(json.dumps(expected, ensure_ascii=False))
+    # Force trimming with a long final row, while retaining the normal metadata.
+    items[0]["rows"][-1] = ["x" * 100]
+    assert evidence_text(items, max_chars=budget) == json.dumps(
+        expected, ensure_ascii=False
+    )
+
+
 def test_focused_observations_keep_raw_coordinates(tmp_path):
     store = make_store(tmp_path)
     text = Observations(store).render("total value", ["t0"], max_chars=4000)
