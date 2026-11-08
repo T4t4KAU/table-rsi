@@ -1,0 +1,150 @@
+{
+  "created_at": "2026-11-08T14:11:13.770246+00:00",
+  "stage": "preliminary mechanism experiment",
+  "dataset_commit": "f70f134f63e4a7b0c4d15b2540953b5e95388586",
+  "split_seed": "20261108",
+  "selection": "selection-v1 SHA256, one dialog per content cluster before repeats",
+  "local_generation_seed": 42,
+  "judge": "deepseek-flash",
+  "primary_metric": "turn-macro reference-point coverage",
+  "secondary_metrics": [
+    "dialog-macro coverage",
+    "full-point coverage rate",
+    "token counts",
+    "latency",
+    "SQL errors",
+    "accepted updates"
+  ],
+  "test_use": "single terminal evaluation after development and state freezing; no tuning from test scores",
+  "variants": [
+    "direct",
+    "retry",
+    "fixed",
+    "L1",
+    "L2"
+  ],
+  "adaptation": {
+    "attempts": 2,
+    "candidate_cap": 4,
+    "proposal_limit": 4,
+    "audit_limit": 6,
+    "fresh_audits": true,
+    "paired_cluster_bootstrap": 2000,
+    "min_clusters": 4,
+    "lower_bound_quantile": 0.05,
+    "delta": 0,
+    "worst_cluster_regression_limit": 0.2,
+    "limitation": "approximate per-attempt gate; no anytime or familywise guarantee",
+    "replay_turn_limit": 1,
+    "full_dialog_terminal_test": true
+  },
+  "model_selection": "Maximum development turn-macro coverage among Qwen3-8B and Qwen3-32B, each with thinking disabled or bounded at 512 tokens per call; no test results used.",
+  "partitions": {
+    "dev": {
+      "ids": [
+        "tab0268",
+        "tab0150",
+        "tab0151",
+        "tab0265",
+        "tab0130",
+        "tab0142",
+        "tab0316",
+        "tab0037",
+        "tab0109",
+        "tab0120",
+        "tab0062",
+        "tab0250"
+      ],
+      "dialogs": 12,
+      "turns": 51,
+      "clusters": 12
+    },
+    "proposal": {
+      "ids": [
+        "tab0176",
+        "tab0232",
+        "tab0007",
+        "tab0034"
+      ],
+      "dialogs": 4,
+      "turns": 19,
+      "clusters": 4
+    },
+    "audit0": {
+      "ids": [
+        "tab0245",
+        "tab0137",
+        "tab0374",
+        "tab0300",
+        "tab0247",
+        "tab0058"
+      ],
+      "dialogs": 6,
+      "turns": 23,
+      "clusters": 6
+    },
+    "audit1": {
+      "ids": [
+        "tab0119",
+        "tab0168",
+        "tab0339",
+        "tab0234",
+        "tab0285",
+        "tab0165"
+      ],
+      "dialogs": 6,
+      "turns": 26,
+      "clusters": 6
+    },
+    "test": {
+      "ids": [
+        "tab0269",
+        "tab0333",
+        "tab0050",
+        "tab0211",
+        "tab0013",
+        "tab0350",
+        "tab0059",
+        "tab0046",
+        "tab0104",
+        "tab0225",
+        "tab0158",
+        "tab0349"
+      ],
+      "dialogs": 12,
+      "turns": 47,
+      "clusters": 12
+    }
+  },
+  "amendments": [
+    {
+      "time": "2026-11-08T14:20:12.502227+00:00",
+      "before_proposal_audit_test_evaluation": true,
+      "change": "candidate cap 3 -> 4",
+      "reason": "include an abstract-memory candidate in the shared first-attempt schedule; same cap for L1 and L2"
+    },
+    {
+      "time": "2026-11-08T14:31:43.107525+00:00",
+      "before_proposal_audit_test_evaluation": true,
+      "change": "Compare both backbones with thinking disabled and with a 512-token thinking budget per call",
+      "reason": "Separate base-model reasoning mode from adaptive search; thinking tokens remain inside the existing total max_tokens and task output budget"
+    },
+    {
+      "time": "2026-11-08T14:37:23.530812+00:00",
+      "before_proposal_audit_test_evaluation": true,
+      "change": "Use the first question of each proposal/audit dialog for the preliminary mechanism study; keep complete terminal test dialogs",
+      "reason": "Bound adaptation feedback while retaining 4 independent proposal groups and 6 independent audit groups per attempt; broader multi-turn adaptation is a subsequent experiment"
+    },
+    {
+      "time": "2026-11-08T15:05:57.098685+00:00",
+      "before_proposal_audit_test_evaluation": false,
+      "before_any_audit_or_test_evaluation": true,
+      "change": "Abort study-v3 proposal run and restart study-v4 after lossless AST patch-guard fix",
+      "reason": "SQLite rendering can omit unsupported function arguments. Signatures now preserve AST arguments and a patch must serialize to exactly its expected AST. All primary proposal comparisons restart; no audit or terminal test was inspected."
+    }
+  ],
+  "common_first_attempt": "Identical first-attempt outputs and scores are reused for L1 and L2; subsequent meta-state differs only through the L2 rule.",
+  "equivalent_final_states": "Reuse final predictions and scores if solver policy and memory are identical; disclose aliases rather than attributing judge noise to RSI.",
+  "hardware": "8B nonthinking GPU1; 8B thinking GPU7; 32B two TP=2 replicas on GPUs2,3 and5,6; GPUs0,4 untouched. All services bound to loopback.",
+  "primary_run": "study-v4"
+}
