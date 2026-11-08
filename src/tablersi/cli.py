@@ -98,11 +98,20 @@ def evaluate(a, state, variant, tasks, out):
         file = out / (task["id"] + ".json")
         if file.exists():
             return json.loads(file.read_text())
-        if variant in {"cooperative", "cooperative_v2"}:
+        if variant in {
+            "cooperative",
+            "cooperative_v2",
+            "cooperative_v3",
+            "cooperative_v4",
+        }:
             from .cooperative import CooperativeAgent
 
             agent = CooperativeAgent(
-                local, state, reconciled=variant == "cooperative_v2"
+                local,
+                state,
+                reconciled=variant == "cooperative_v2",
+                replanned=variant == "cooperative_v3",
+                patched=variant == "cooperative_v4",
             )
         else:
             agent = Agent(local, state, variant=variant)

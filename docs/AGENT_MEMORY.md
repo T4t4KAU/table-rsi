@@ -10,6 +10,10 @@ The v2 experimental solver also maintains task-local evidence withdrawals and
 evidence-linked binding revisions. These update subsequent role inputs and retain
 the original trace. A previous task contract can guide follow-up entity resolution;
 it is explicitly marked as a model proposal rather than a factual source.
+The v3 variant permits typed revisions to formulas and metric definitions when
+linked to successful observed evidence. The v4 variant can propagate corrections
+as literal answer edits, preserving unaffected text. These remain model-proposed
+semantic changes; their structural checks cannot certify answer correctness.
 The richer evidence calibration, lifecycle, and contextual L2 described below
 remain research targets; implementation is not evidence of measured improvement.
 

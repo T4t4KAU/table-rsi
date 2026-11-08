@@ -32,6 +32,12 @@ def main():
     p.add_argument("--output", help="Optional result JSON with trace and token ledger")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--thinking-budget", type=int)
+    p.add_argument(
+        "--solver-version",
+        choices=["v1", "v2", "v3", "v4"],
+        default="v1",
+        help="Cooperative runtime matching the frozen release experiment",
+    )
     a = p.parse_args()
     question = a.question if a.question is not None else sys.stdin.read().strip()
     if not question:
@@ -48,8 +54,11 @@ def main():
         if a.thinking_budget is not None
         else (1024 if a.bundle else 0)
     )
-    if thinking < 0 or thinking >= 4096:
-        p.error("thinking budget must be in [0, 4096)")
+    if a.solver_version != "v1" and not a.bundle:
+        p.error("--solver-version requires --bundle")
+    thinking_limit = 16385 if a.bundle else 4096
+    if thinking < 0 or thinking >= thinking_limit:
+        p.error(f"thinking budget must be in [0, {thinking_limit})")
     client = Client(a.local_url, a.local_model, local=True, thinking_budget=thinking)
     if a.bundle:
         from .cooperative import CooperativeAgent
@@ -60,7 +69,13 @@ def main():
             p.error(
                 "candidate/rejected bundles are not deployment releases; use the study evaluator"
             )
-        agent = CooperativeAgent(client, bundle)
+        agent = CooperativeAgent(
+            client,
+            bundle,
+            reconciled=a.solver_version == "v2",
+            replanned=a.solver_version == "v3",
+            patched=a.solver_version == "v4",
+        )
     else:
         agent = Agent(client, State.load(a.state) if a.state else State())
     result = agent.solve(store, question, history, a.seed)

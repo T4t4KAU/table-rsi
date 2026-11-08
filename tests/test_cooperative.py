@@ -213,3 +213,118 @@ def test_reconciled_solver_updates_binding_and_corrects_final_answer(tmp_path):
     answers = [t for t in result["trace"] if t["role"] == "AnswerComposer"]
     assert all(t["reads_evidence"] == ["e2"] for t in answers)
     assert len([t for t in result["trace"] if t["role"] == "Executor"]) == 2
+
+
+def test_replanned_contract_reaches_answer_composer(tmp_path):
+    store = make_store(tmp_path)
+
+    class Fake:
+        def __init__(self):
+            self.count = 0
+
+        def chat(self, messages, **kwargs):
+            self.count += 1
+            payloads = [
+                {
+                    "tables": ["t0"],
+                    "requirements": [{"id": "r1", "formula": "count rows"}],
+                },
+                {
+                    "queries": [
+                        {
+                            "sql": "SELECT SUM(CAST(c2 AS REAL)) AS total FROM t0 WHERE _row > 1"
+                        }
+                    ]
+                },
+                {
+                    "requirement_revisions": [
+                        {
+                            "need_id": "r1",
+                            "updates": {"formula": "sum values"},
+                            "evidence_ids": ["e1"],
+                            "reason": "The user requests a sum, not a row count",
+                        }
+                    ]
+                },
+                "Total is 8.",
+                {"revise_answer": False},
+            ]
+            if self.count == 4:
+                prompt = messages[-1]["content"]
+                current = json.loads(
+                    prompt.split("上游工作产物（均待验证）：\n")[1].split(
+                        "\n执行证据："
+                    )[0]
+                )
+                assert (
+                    current["current_contract"]["requirements"][0]["formula"]
+                    == "sum values"
+                )
+            value = payloads[self.count - 1]
+            return {
+                "content": value if isinstance(value, str) else json.dumps(value),
+                "usage": {"prompt_tokens": 100, "completion_tokens": 20},
+                "elapsed_s": 0.1,
+            }
+
+    result = CooperativeAgent(Fake(), Bundle(), replanned=True).solve(
+        store, "Sum values"
+    )
+    assert result["answer"] == "Total is 8."
+    assert result["variant"] == "cooperative_v3"
+    assert result["budget"]["unknown_usage"] == 0
+    assert (
+        result["working_memory"]["correction_history"][0]["action"]
+        == "requirement_revision"
+    )
+
+
+def test_evidence_linked_answer_patch_preserves_other_claims(tmp_path):
+    store = make_store(tmp_path)
+
+    class Fake:
+        def __init__(self):
+            self.count = 0
+
+        def chat(self, messages, **kwargs):
+            self.count += 1
+            responses = [
+                {"tables": ["t0"], "requirements": [{"id": "r1", "need": "sum"}]},
+                {
+                    "queries": [
+                        {
+                            "sql": "SELECT SUM(CAST(c2 AS REAL)) AS total FROM t0 WHERE _row > 1"
+                        }
+                    ]
+                },
+                {"queries": []},
+                "Total is 80. Keep the supported explanation.",
+                {"revise_answer": True, "checks": [{"issue": "e1 gives 8"}]},
+                {
+                    "edits": [
+                        {
+                            "old": "Total is 80.",
+                            "new": "Total is 8.",
+                            "reason": "Correct total using e1",
+                            "evidence_ids": ["e1"],
+                        }
+                    ]
+                },
+            ]
+            if self.count == 6:
+                assert kwargs["json_mode"]
+                assert "内部答案编辑模式" in messages[-1]["content"]
+            value = responses[self.count - 1]
+            return {
+                "content": value if isinstance(value, str) else json.dumps(value),
+                "usage": {"prompt_tokens": 100, "completion_tokens": 20},
+                "elapsed_s": 0.1,
+            }
+
+    result = CooperativeAgent(Fake(), Bundle(), patched=True).solve(store, "Total?")
+    assert result["answer"] == "Total is 8. Keep the supported explanation."
+    assert result["variant"] == "cooperative_v4"
+    assert result["budget"]["used_calls"] == 6
+    assert result["budget"]["unknown_usage"] == 0
+    assert result["trace"][-1]["role"] == "AnswerPatch"
+    assert result["trace"][-1]["applied"]

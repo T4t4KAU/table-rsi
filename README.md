@@ -84,8 +84,10 @@ partitions; evaluation with `--state` runs a committed state. Adaptation does
 not train model weights. The new bootstrap partition has different split names
 and is not an input to this legacy adaptation loop.
 
-The primary metric is LLM-judged **reference-point coverage**, not exact-match
-accuracy or human-verified correctness. All new experiments must keep final
+The legacy primary metric is LLM-judged **reference-point coverage**. The new
+cooperative study ranks candidates by the fraction of turns covering all points,
+then by average point coverage. Neither is human-verified correctness.
+All new experiments must keep final
 evaluation labels out of training, memory updates, and candidate selection.
 
 ## Predeployment teaching and AgentMemory

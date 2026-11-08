@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 @dataclass
 class WorkingMemory:
     contract: dict
+    allow_requirement_revisions: bool = False
     revisions: list[dict] = field(default_factory=list)
     contested: dict[str, str] = field(default_factory=dict)
 
@@ -81,6 +82,62 @@ class WorkingMemory:
                         "evidence_ids": support,
                     }
                 )
+        self.revisions.extend(events)
+        if self.allow_requirement_revisions:
+            events.extend(self._revise_requirements(review, evidence, requirements))
+        return events
+
+    def _revise_requirements(self, review, evidence, requirements):
+        """Revise a semantic proposal, never permissions or executable code."""
+        revisions = review.get("requirement_revisions", [])
+        if not isinstance(revisions, list):
+            return []
+        successful = {
+            e["id"] for e in evidence if e.get("ok") and e["id"] not in self.contested
+        }
+        fields = {
+            "need",
+            "kind",
+            "binding",
+            "formula",
+            "evidence_needed",
+            "entity",
+            "metric",
+            "time_scope",
+        }
+        events = []
+        for item in revisions[:12]:
+            if not isinstance(item, dict):
+                continue
+            need, updates = item.get("need_id"), item.get("updates")
+            support, reason = item.get("evidence_ids"), item.get("reason")
+            if (
+                not isinstance(need, str)
+                or need not in requirements
+                or not isinstance(updates, dict)
+                or not updates
+                or not set(updates) <= fields
+                or not all(
+                    isinstance(v, str) and 0 < len(v) <= 1200 for v in updates.values()
+                )
+                or not isinstance(reason, str)
+                or not reason.strip()
+                or not isinstance(support, list)
+                or not support
+                or any(not isinstance(i, str) or i not in successful for i in support)
+            ):
+                continue
+            previous = {key: requirements[need].get(key) for key in updates}
+            requirements[need].update(updates)
+            event = {
+                "action": "requirement_revision",
+                "need_id": need,
+                "old_fields": previous,
+                "new_fields": copy.deepcopy(updates),
+                "evidence_ids": list(support),
+                "reason": reason[:600],
+            }
+            events.append(event)
         self.revisions.extend(events)
         return events
 

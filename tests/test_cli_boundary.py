@@ -10,7 +10,10 @@ from tablersi.state import State
 
 
 @pytest.mark.parametrize("external_oracle", [False, True])
-@pytest.mark.parametrize("variant", ["direct", "cooperative", "cooperative_v2"])
+@pytest.mark.parametrize(
+    "variant",
+    ["direct", "cooperative", "cooperative_v2", "cooperative_v3", "cooperative_v4"],
+)
 def test_oracle_is_scorer_only_and_history_uses_predictions(
     tmp_path, monkeypatch, external_oracle, variant
 ):
@@ -90,3 +93,51 @@ def test_oracle_is_scorer_only_and_history_uses_predictions(
         client.requests[first_turn_calls]
     )
     assert report["turns"] == 2
+
+
+def test_inference_entrypoint_matches_frozen_cooperative_runtime(tmp_path, monkeypatch):
+    from tablersi import ask
+
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "a.csv").write_text("name,value\nA,3\n")
+    store = tmp_path / "store"
+    build_store(source, store)
+    bundle = tmp_path / "release.json"
+    bundle.write_text(json.dumps(Bundle().dump()))
+    output = tmp_path / "answer.json"
+
+    class Local:
+        thinking_budget = 4096
+
+        def chat(self, messages, **kwargs):
+            assert "SECRET_ORACLE" not in json.dumps(messages)
+            return {
+                "content": "{}" if kwargs.get("json_mode") else "A has value 3.",
+                "usage": {"prompt_tokens": 20, "completion_tokens": 10},
+            }
+
+    monkeypatch.setattr(ask, "Client", lambda *args, **kwargs: Local())
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "tablersi-ask",
+            "--store",
+            str(store),
+            "--bundle",
+            str(bundle),
+            "--question",
+            "Value?",
+            "--solver-version",
+            "v3",
+            "--thinking-budget",
+            "4096",
+            "--output",
+            str(output),
+        ],
+    )
+    ask.main()
+    result = json.loads(output.read_text())
+    assert result["variant"] == "cooperative_v3"
+    assert result["answer"] == "A has value 3."
+    assert result["working_memory"] is not None

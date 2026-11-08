@@ -14,7 +14,8 @@ by the presence of these modules.
    it can request up to two rounds of supplementary or corrected queries.
 5. `AnswerComposer` receives the contract, checks, raw observations, and evidence.
 
-The four generative roles share frozen Qwen3-32B weights. The executor is
+The four generative roles share the frozen checkpoint declared in each protocol
+(initially Qwen3-32B; subsequent development uses Qwen3.6). The executor is
 deterministic. A task retrieves at most three cooperative skills once and projects
 their role-specific instructions throughout that task. Skill provenance remains
 in the stored bundle and is not passed to the solver. A whole-bundle hash identifies
@@ -150,3 +151,58 @@ For larger thinking budgets, the per-call generation cap is
 8192-token per-call cap. Matched variants must use the same budget. Engineering
 changes, a stronger checkpoint, and learned joint bundles require distinct
 comparisons; none alone establishes recursive improvement.
+
+The subsequent v3 engineering variant also permits evidence-linked corrections
+to the requirement's formula, metric, entity, time scope, and other declared
+semantic fields. It cannot change permissions or budgets. This addresses a
+failure in which a verifier enforces an incorrect planning formula and rejects
+a better query. The v4 variant applies literal, evidence-linked edits to answer
+drafts rather than regenerating the entire answer. Edits must have unique,
+nonoverlapping anchors and available evidence; untouched text is preserved.
+These checks establish structural validity, not semantic correctness. Each
+variant needs its own frozen run and matched comparison.
+
+## Expanded teacher-group curriculum
+
+`python -m tablersi.curriculum` uses all dialogs within the original 17
+teacher-owned groups: 71 dialogs and 317 turns. Search and audit groups remain
+excluded. This is a broader predeployment teaching configuration than the
+original 34-episode pilot, and its effect must be measured separately.
+
+The teacher sees the deployed role interfaces and produces three joint bundles.
+Its source diagnoses can be reused only when exact input hashes and source IDs
+match. Raw proposals are retained. An explicit compilation step removes
+unavailable rubric-related retrieval keywords without altering action text;
+instructions that depend on a hidden rubric are rejected. This complements,
+but does not prove, abstraction or absence of memorization. Candidate policies
+are not released until the same-runtime search and independent audit pass.
+
+The curriculum can optionally consume `--episodes` from actual local student
+runs. It checks dialog ownership, cluster identity, and question identity before
+passing observable actions, answers, and feedback to the teacher. It never
+accepts search/audit/deployment trajectories as teaching examples. With
+`--bundle`, the teacher also sees the incumbent abstract rules and must produce
+a complete replacement; parent version and input hashes retain the lineage.
+Without student episodes this is instructional skill induction, not a measured
+feedback-driven recursive improvement.
+
+Remote reasoning is explicit, for example `--judge-model deepseek-v4-pro
+--teacher-effort high --teacher-max-tokens 24000`. This configures only the
+curriculum teacher. Evaluation continues to use its separately frozen scorer.
+Malformed teaching JSON is retained and retried up to three times; completed
+exact-input diagnoses can be reused after an interrupted run. Raw hidden
+reasoning is not stored. Prior failed proposals remain part of the experiment
+record rather than being silently replaced.
+
+The inference entry point accepts the matching cooperative runtime and budget:
+
+```bash
+tablersi-ask --store data/my-table --question 'Compare the costs.' \
+  --bundle runs/cooperative/adaptation/release.json \
+  --solver-version v3 --thinking-budget 4096 \
+  --local-url http://127.0.0.1:31105/v1 \
+  --local-model tablersi-qwen36-35b-fp8
+```
+
+Use the exact version/model/budget approved in the release experiment. Selecting
+an arbitrary combination is not equivalent to deploying that audited release.

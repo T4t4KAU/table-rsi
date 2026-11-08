@@ -40,3 +40,62 @@ def test_unknown_evidence_and_malformed_fields_cannot_rebind():
     )
     assert not events
     assert memory.contract["requirements"][0]["binding"] == "original"
+
+
+def test_semantic_revision_changes_formula_only_with_successful_evidence():
+    original = {"requirements": [{"id": "r1", "formula": "wrong", "binding": "row"}]}
+    review = {
+        "requirement_revisions": [
+            {
+                "need_id": "r1",
+                "updates": {
+                    "formula": "(end / start - 1) * 100",
+                    "metric": "cumulative level change",
+                },
+                "evidence_ids": ["e1"],
+                "reason": "Raw header defines cumulative values, not period totals",
+            }
+        ]
+    }
+    memory = WorkingMemory(original, allow_requirement_revisions=True)
+    assert not memory.apply(review, [{"id": "e1", "ok": False}])
+    events = memory.apply(review, [{"id": "e1", "ok": True}])
+    assert len(events) == 1
+    assert memory.contract["requirements"][0]["formula"] == "(end / start - 1) * 100"
+    assert memory.contract["requirements"][0]["binding"] == "row"
+    assert original["requirements"][0]["formula"] == "wrong"
+    assert memory.revisions == events
+    legacy = WorkingMemory(original)
+    assert not legacy.apply(review, [{"id": "e1", "ok": True}])
+    assert legacy.contract == original
+
+
+def test_semantic_revision_rejects_contested_evidence_and_protected_fields():
+    memory = WorkingMemory(
+        {"requirements": [{"id": "r1", "formula": "original"}]},
+        allow_requirement_revisions=True,
+    )
+    evidence = [{"id": "e1", "ok": True}, {"id": "e2", "ok": True}]
+    memory.apply(
+        {"withdraw_evidence": [{"id": "e1", "reason": "wrong entity"}]}, evidence
+    )
+    for updates, support in [
+        ({"formula": "bad"}, ["e1"]),
+        ({"formula": "bad", "sql_permissions": "write"}, ["e2"]),
+        ({"formula": []}, ["e2"]),
+        ({"formula": "bad"}, []),
+    ]:
+        assert not memory.apply(
+            {
+                "requirement_revisions": [
+                    {
+                        "need_id": "r1",
+                        "updates": updates,
+                        "evidence_ids": support,
+                        "reason": "test",
+                    }
+                ]
+            },
+            evidence,
+        )
+    assert memory.contract["requirements"][0]["formula"] == "original"

@@ -51,11 +51,28 @@ class Budget:
 
 
 class Client:
-    def __init__(self, base_url, model, key_file=None, local=True, thinking_budget=0):
+    def __init__(
+        self,
+        base_url,
+        model,
+        key_file=None,
+        local=True,
+        thinking_budget=0,
+        remote_effort=None,
+        request_timeout=180,
+    ):
         self.base = base_url.rstrip("/")
         self.model = model
         self.local = local
         self.thinking_budget = thinking_budget
+        if remote_effort not in {None, "low", "high", "max"}:
+            raise ValueError("Invalid remote thinking effort")
+        if local and remote_effort is not None:
+            raise ValueError(
+                "Remote thinking configuration cannot configure a local client"
+            )
+        self.remote_effort = remote_effort
+        self.request_timeout = request_timeout
         self.key = (
             Path(key_file).read_text().strip()
             if key_file
@@ -84,7 +101,12 @@ class Client:
             if self.thinking_budget:
                 payload["thinking_token_budget"] = self.thinking_budget
         else:
-            payload["thinking"] = {"type": "disabled"}
+            payload["thinking"] = {
+                "type": "enabled" if self.remote_effort else "disabled"
+            }
+            if self.remote_effort:
+                payload["reasoning_effort"] = self.remote_effort
+                payload.pop("temperature")
         if json_mode:
             payload["response_format"] = {"type": "json_object"}
         headers = {"Content-Type": "application/json"}
@@ -96,7 +118,7 @@ class Client:
                 self.base + "/chat/completions",
                 json=payload,
                 headers=headers,
-                timeout=180,
+                timeout=self.request_timeout,
             )
             if r.status_code in [429, 500, 502, 503, 504] and attempt < 2:
                 time.sleep(2**attempt)

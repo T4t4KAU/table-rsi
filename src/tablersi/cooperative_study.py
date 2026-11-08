@@ -117,7 +117,11 @@ def evaluate_stage(args, stage, bundle, out):
         else data / "oracle.json"
     )
     config = SimpleNamespace(**{**vars(args), "data": data, "oracle_file": oracle})
-    variant = "cooperative_v2" if args.solver_version == "v2" else "cooperative"
+    variant = (
+        "cooperative"
+        if args.solver_version == "v1"
+        else "cooperative_" + args.solver_version
+    )
     records, summary = evaluate(config, bundle, variant, tasks, out)
     if stage == "deployment":
         from .evaluate import summarize
@@ -379,7 +383,9 @@ def main():
     parser.add_argument("--local-url", default="http://127.0.0.1:31100/v1")
     parser.add_argument("--local-model", default="tablersi-qwen3-32b")
     parser.add_argument("--thinking-budget", type=int, default=1024)
-    parser.add_argument("--solver-version", choices=["v1", "v2"], default="v1")
+    parser.add_argument(
+        "--solver-version", choices=["v1", "v2", "v3", "v4"], default="v1"
+    )
     parser.add_argument("--judge-url", default="https://api.deepseek.com")
     parser.add_argument("--judge-model", default="deepseek-flash")
     parser.add_argument("--key-file", type=Path)
