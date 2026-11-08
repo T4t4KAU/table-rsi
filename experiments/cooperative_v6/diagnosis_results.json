@@ -1,0 +1,333 @@
+{
+  "scope": "Complete matched v6 baseline/full-memory pair; the third no-global arm failed and has no aggregate. Two planning passes and identical limits. No audit or deployment.",
+  "arms": {
+    "baseline": {
+      "summary": {
+        "dialogs": 13,
+        "turns": 26,
+        "judge_failures": 0,
+        "turn_macro_coverage": 0.6237179487179487,
+        "dialog_macro_coverage": 0.6237179487179487,
+        "micro_coverage": 0.5376344086021505,
+        "fully_covered_turn_rate": 0.4230769230769231,
+        "local_model_calls": 145,
+        "local_input_tokens": 943746,
+        "local_output_tokens": 494197,
+        "database_calls": 53,
+        "unknown_model_usage_calls": 0,
+        "successful_queries": 50,
+        "failed_queries": 3,
+        "judge_input_tokens": 27192,
+        "judge_output_tokens": 5850,
+        "mean_turn_latency_s": 188.56171102955255
+      },
+      "mechanism": {
+        "supported_turns": 24,
+        "turns_without_selected_skills": 24,
+        "refinement_rejected": 1,
+        "refinement_accepted": 23
+      },
+      "calls_per_supported_turn": {
+        "6": 23,
+        "7": 1
+      },
+      "role_memory_mismatches": [],
+      "episode_sha256": {
+        "tab0058.json": "829f22de1185666ee54b8dbfd8375ca03b26f9e0f7da62cdb098567a40aa520b",
+        "tab0137.json": "054b695eb2edd44de32d02854db7371712f31904d7fa28c178f88dee97349afb",
+        "tab0184.json": "8df2aec4d2f7d7c692c9156d60ebbf675a333901972a899ccff51b182192f68a",
+        "tab0191.json": "c6de5493268506390d69b454c35a1a9d9c46ff63549cafdcb376ad009650da9f",
+        "tab0236.json": "d0c072ee2e45383962f0a7c73baf1e0ed7c52fe494d75acdcbdacb51ba4bad74",
+        "tab0243.json": "1aa3a9ba31384c30a13cbcf8efc6b552cd766a4a898bcf35b64186d3b83bd201",
+        "tab0245.json": "3ecf304dd8febf9b5fe4020d180816a4679ff47fe3cfafbda325210e9bf0d254",
+        "tab0247.json": "03d43d7b478e721121a8ad876e14d4c43c7bcab62f8444da6141e6693689a316",
+        "tab0249.json": "e91358f7a4e62dc827bce08a17380be5e1b4672ac6c211bfeb6a627737a12460",
+        "tab0258.json": "962df531171721f9bfeef250bcacce2ebb0d78a5bd6aa731ef9b5d07f933c388",
+        "tab0300.json": "a659ca3b85db8b64f86743218004c698c68fdef04ac2a46b3abb00779afabba7",
+        "tab0372.json": "b79941c0e4cddc152953549dfe6c2f023224ba5bbef1f63644e84bed42f10b71",
+        "tab0374.json": "71eb132ba030a21e56cc89216f7362417aee4aec3133de922ae28ed74e26ec3f"
+      },
+      "verification_schedule": {
+        "pre_answer_1_post_answer_1": 21,
+        "pre_answer_2_post_answer_0": 3
+      }
+    },
+    "full_memory": {
+      "summary": {
+        "dialogs": 13,
+        "turns": 26,
+        "judge_failures": 0,
+        "turn_macro_coverage": 0.5628205128205128,
+        "dialog_macro_coverage": 0.5628205128205128,
+        "micro_coverage": 0.4838709677419355,
+        "fully_covered_turn_rate": 0.3076923076923077,
+        "local_model_calls": 145,
+        "local_input_tokens": 1065720,
+        "local_output_tokens": 522503,
+        "database_calls": 57,
+        "unknown_model_usage_calls": 0,
+        "successful_queries": 55,
+        "failed_queries": 2,
+        "judge_input_tokens": 27073,
+        "judge_output_tokens": 6131,
+        "mean_turn_latency_s": 198.22797302376085
+      },
+      "mechanism": {
+        "supported_turns": 24,
+        "turns_without_selected_skills": 5,
+        "refinement_accepted": 22,
+        "refinement_rejected": 2
+      },
+      "calls_per_supported_turn": {
+        "6": 23,
+        "7": 1
+      },
+      "role_memory_mismatches": [],
+      "episode_sha256": {
+        "tab0058.json": "36ea066cd3a0cc8e40eaeca9a36132a5ac0daf9aa7a8f265e42a26d6b89a31a8",
+        "tab0137.json": "0514bac168a0ebe83314a8696bba9a48209c56b4e89324f9c257727bd6087877",
+        "tab0184.json": "30e42869520948822e8636cc94af65cb705b0280f5986d4c4cd9a5e4546c1175",
+        "tab0191.json": "d7a8705f9aa12818d591bd07fae592e3bb354447b159d19af706132bc6f9761d",
+        "tab0236.json": "43e5bfbef83f5e0773017e9813924baa50311e60a291365a6fbd6a8723f6f2f7",
+        "tab0243.json": "7aa6be4bf16ce2d0b48b79aadb3c66cf54114e0f86cbfff89d8b02c38ba9fc11",
+        "tab0245.json": "25ccdcea6d58d6a1a2cf595bfda71200e2ff56e6350aa203c70bfba8f69a1627",
+        "tab0247.json": "4b1f7284043e9b0237e3e682b638cb45290fb747421adb849d3c8d4bf89579ee",
+        "tab0249.json": "3be879ea061ed9e0373227a5e0b5347064279956a48fd1bca325afb568535939",
+        "tab0258.json": "e23c8ce6d07df7b22f663af844f20667919a43352aa9a959dc81b35ee6bcb5d0",
+        "tab0300.json": "80103e2dc147e12ae46ecf1a7eab5dc7157ec9a1a09062f0991f13c1c7c14886",
+        "tab0372.json": "c9f263e61b57869994da56fb1d97cb3513361c0f6e5220430325f6c1ffea6a9b",
+        "tab0374.json": "bac7ddd452ab930e51c102dbc161d1d9bbf94621a4bde87b76c66e254d49e322"
+      },
+      "verification_schedule": {
+        "pre_answer_1_post_answer_1": 19,
+        "pre_answer_2_post_answer_0": 5
+      }
+    }
+  },
+  "comparisons": {
+    "full_memory": {
+      "coverage_gain": -0.0608974358974359,
+      "full_point_gain": -0.11538461538461539,
+      "coverage_cluster_bootstrap_95_two_sided": [
+        -0.1794871794871795,
+        0.03525641025641025
+      ],
+      "full_point_cluster_bootstrap_95_two_sided": [
+        -0.3076923076923077,
+        0.07692307692307693
+      ],
+      "gained_fully_covered": 1,
+      "lost_fully_covered": 4,
+      "changed_turns": [
+        {
+          "id": "tab0058",
+          "turn": 0,
+          "baseline_coverage": 0.3333333333333333,
+          "candidate_coverage": 0.6666666666666666
+        },
+        {
+          "id": "tab0243",
+          "turn": 0,
+          "baseline_coverage": 0.75,
+          "candidate_coverage": 1.0
+        },
+        {
+          "id": "tab0245",
+          "turn": 0,
+          "baseline_coverage": 0.0,
+          "candidate_coverage": 0.25
+        },
+        {
+          "id": "tab0258",
+          "turn": 0,
+          "baseline_coverage": 1.0,
+          "candidate_coverage": 0.75
+        },
+        {
+          "id": "tab0300",
+          "turn": 0,
+          "baseline_coverage": 1.0,
+          "candidate_coverage": 0.3333333333333333
+        },
+        {
+          "id": "tab0300",
+          "turn": 1,
+          "baseline_coverage": 1.0,
+          "candidate_coverage": 0.5
+        },
+        {
+          "id": "tab0372",
+          "turn": 1,
+          "baseline_coverage": 1.0,
+          "candidate_coverage": 0.3333333333333333
+        },
+        {
+          "id": "tab0374",
+          "turn": 0,
+          "baseline_coverage": 0.5,
+          "candidate_coverage": 0.16666666666666666
+        }
+      ],
+      "scope": "Descriptive paired search analysis; not the independent audit gate."
+    }
+  },
+  "failed_arm": {
+    "name": "no_global",
+    "completed_dialogs": 12,
+    "expected_dialogs": 13,
+    "error": "KeyError: decisions when routing falls back without semantic decisions",
+    "aggregate": null,
+    "policy": "Preserve partial records; do not combine with a resumed remainder or call them a complete arm."
+  },
+  "limitations": [
+    "Single generation per question and arm; nominal seed is not determinism.",
+    "All-points-covered rate is a reference coverage metric, not proof of factual correctness.",
+    "The initial routing index can affect the draft even when no skill is selected later.",
+    "V6 jointly changes routing order and conditional guidance, so it does not isolate each mechanism."
+  ],
+  "verification_regression_case": {
+    "scope": "Trace-level diagnosis; one observed failure, not a controlled estimate of overall effect.",
+    "id": "tab0374",
+    "turn": 0,
+    "source_sha256": "bac7ddd452ab930e51c102dbc161d1d9bbf94621a4bde87b76c66e254d49e322",
+    "question": "塑料制品去年二三四季度的销量怎么样？哪段时间增长最猛？",
+    "memory_skill": {
+      "SemanticPlanner": "在需求中明确指标是累计值，要求计算单期值（差分），并区分“累计水平增幅”（(当期累计-上期累计)/上期累计）与“单期环比”（(当期单期-上期单期)/上期单期）；累计序列首个展示期不一定是累计起点，仅当明确证明累计从零开始才可令首期单期等于首期累计；若缺少前期累计值（含首期前一期的累计值），标注无法差分，不得将首期累计值当单期量。",
+      "QueryBuilder": "使用 LAG 或相邻累计列相减生成单期序列；仅当首期累计值对应起点且明确累计从零开始时，首期单期等于首期累计；否则首期单期不可确定，需输出 NULL 并标注缺失前置累计；避免直接对累计值计算环比；输出累计值和单期值并列。",
+      "EvidenceVerifier": "当累计起点明确从零开始时，验证单期序列之和等于末期累计值（容差内）；否则仅验证自第二期起的差分之和等于末期累计值与首期累计值之差，首期单期值不可由现有数据核验；检查差分符号是否合理（数量指标非负）；对比用户问题确认口径是累计增幅还是单期环比。",
+      "AnswerComposer": "报告时明确标注所用口径；若两种口径均可得，分别呈现；不将累计值直接当单期值解释趋势；若首期单期不可确定，不得用首期累计值充当单期值。"
+    },
+    "executions": [
+      {
+        "id": "e1",
+        "purpose": "计算2019年Q2-Q4塑料制品单期销量及环比增长率",
+        "sql": "SELECT\n  'Q2' AS quarter,\n  CAST(c4 AS REAL) AS q2_cumulative,\n  CAST(c4 AS REAL) AS q2_single,\n  NULL AS q2_growth_rate\nFROM t6 WHERE _row = 2\nUNION ALL\nSELECT\n  'Q3' AS quarter,\n  CAST(c3 AS REAL) AS q3_cumulative,\n  CAST(c3 AS REAL) - CAST(c4 AS REAL) AS q3_single,\n  (CAST(c3 AS REAL) - CAST(c4 AS REAL) - CAST(c4 AS REAL)) * 1.0 / CAST(c4 AS REAL) AS q3_growth_rate\nFROM t6 WHERE _row = 2\nUNION ALL\nSELECT\n  'Q4' AS quarter,\n  CAST(c2 AS REAL) AS q4_cumulative,\n  CAST(c2 AS REAL) - CAST(c3 AS REAL) AS q4_single,\n  (CAST(c2 AS REAL) - CAST(c3 AS REAL) - (CAST(c3 AS REAL) - CAST(c4 AS REAL))) * 1.0 / (CAST(c3 AS REAL) - CAST(c4 AS REAL)) AS q4_growth_rate\nFROM t6 WHERE _row = 2",
+        "ok": true,
+        "columns": [
+          "quarter",
+          "q2_cumulative",
+          "q2_single",
+          "q2_growth_rate"
+        ],
+        "rows": [
+          [
+            "Q2",
+            3129.9,
+            3129.9,
+            null
+          ],
+          [
+            "Q3",
+            5587.7,
+            2457.7999999999997,
+            -0.21473529505735017
+          ],
+          [
+            "Q4",
+            7699.1,
+            2111.4000000000005,
+            -0.14093905118398536
+          ]
+        ]
+      },
+      {
+        "id": "e2",
+        "purpose": "重新计算Q2-Q4单期销量及累计环比增速，修正原证据e1中错误的增速公式及对Q2单期的错误假设。",
+        "sql": "SELECT 'Q2' AS quarter, CAST(\"c4\" AS REAL) AS q2_cumulative, NULL AS q2_single, NULL AS q2_growth FROM t6 WHERE _row = 2 UNION ALL SELECT 'Q3' AS quarter, CAST(\"c3\" AS REAL) AS q3_cumulative, CAST(\"c3\" AS REAL) - CAST(\"c4\" AS REAL) AS q3_single, (CAST(\"c3\" AS REAL) - CAST(\"c4\" AS REAL)) * 1.0 / CAST(\"c4\" AS REAL) AS q3_growth FROM t6 WHERE _row = 2 UNION ALL SELECT 'Q4' AS quarter, CAST(\"c2\" AS REAL) AS q4_cumulative, CAST(\"c2\" AS REAL) - CAST(\"c3\" AS REAL) AS q4_single, (CAST(\"c2\" AS REAL) - CAST(\"c3\" AS REAL)) * 1.0 / CAST(\"c3\" AS REAL) AS q4_growth FROM t6 WHERE _row = 2",
+        "ok": true,
+        "columns": [
+          "quarter",
+          "q2_cumulative",
+          "q2_single",
+          "q2_growth"
+        ],
+        "rows": [
+          [
+            "Q2",
+            3129.9,
+            null,
+            null
+          ],
+          [
+            "Q3",
+            5587.7,
+            2457.7999999999997,
+            0.7852647049426498
+          ],
+          [
+            "Q4",
+            7699.1,
+            2111.4000000000005,
+            0.37786566923779025
+          ]
+        ]
+      },
+      {
+        "id": "e3",
+        "purpose": "基于累计值精确计算2019年二、三、四季度塑料制品单期销量及环比绝对增量，用于准确回答销量趋势与增长幅度。",
+        "sql": "SELECT 'Q2' AS quarter, CAST(\"c4\" AS REAL) AS q2_cumulative, CAST(\"c4\" AS REAL) AS q2_single, NULL AS q2_change FROM t6 WHERE _row = 2 UNION ALL SELECT 'Q3' AS quarter, CAST(\"c3\" AS REAL) AS q3_cumulative, CAST(\"c3\" AS REAL) - CAST(\"c4\" AS REAL) AS q3_single, (CAST(\"c3\" AS REAL) - CAST(\"c4\" AS REAL)) - CAST(\"c4\" AS REAL) AS q3_change FROM t6 WHERE _row = 2 UNION ALL SELECT 'Q4' AS quarter, CAST(\"c2\" AS REAL) AS q4_cumulative, CAST(\"c2\" AS REAL) - CAST(\"c3\" AS REAL) AS q4_single, (CAST(\"c2\" AS REAL) - CAST(\"c3\" AS REAL)) - (CAST(\"c3\" AS REAL) - CAST(\"c4\" AS REAL)) AS q4_change FROM t6 WHERE _row = 2",
+        "ok": true,
+        "columns": [
+          "quarter",
+          "q2_cumulative",
+          "q2_single",
+          "q2_change"
+        ],
+        "rows": [
+          [
+            "Q2",
+            3129.9,
+            3129.9,
+            null
+          ],
+          [
+            "Q3",
+            5587.7,
+            2457.7999999999997,
+            -672.1000000000004
+          ],
+          [
+            "Q4",
+            7699.1,
+            2111.4000000000005,
+            -346.3999999999992
+          ]
+        ]
+      }
+    ],
+    "verifiers": [
+      "{\"checks\":[{\"need\":\"r1\",\"status\":\"supported\",\"evidence_ids\":[\"t6_row2\"],\"issue\":\"none\"},{\"need\":\"r2\",\"status\":\"missing\",\"evidence_ids\":[],\"issue\":\"表头仅含2019年Q2-Q4累计值，缺失Q1数据，无法准确计算Q2单期销量；Q3、Q4单期销量需通过累计值差分计算。\"},{\"need\":\"r3\",\"status\":\"supported\",\"evidence_ids\":[\"new_q1\"],\"issue\":\"none\"},{\"need\":\"r4\",\"status\":\"supported\",\"evidence_ids\":[\"t6_header\"],\"issue\":\"none\"}],\"queries\":[{\"needs\":[\"r2\",\"r3\"],\"purpose\":\"重新计算Q2-Q4单期销量及累计环比增速，修正原证据e1中错误的增速公式及对Q2单期的错误假设。\",\"sql\":\"SELECT 'Q2' AS quarter, CAST(\\\"c4\\\" AS REAL) AS q2_cumulative, NULL AS q2_single, NULL AS q2_growth FROM t6 WHERE _row = 2 UNION ALL SELECT 'Q3' AS quarter, CAST(\\\"c3\\\" AS REAL) AS q3_cumulative, CAST(\\\"c3\\\" AS REAL) - CAST(\\\"c4\\\" AS REAL) AS q3_single, (CAST(\\\"c3\\\" AS REAL) - CAST(\\\"c4\\\" AS REAL)) * 1.0 / CAST(\\\"c4\\\" AS REAL) AS q3_growth FROM t6 WHERE _row = 2 UNION ALL SELECT 'Q4' AS quarter, CAST(\\\"c2\\\" AS REAL) AS q4_cumulative, CAST(\\\"c2\\\" AS REAL) - CAST(\\\"c3\\\" AS REAL) AS q4_single, (CAST(\\\"c2\\\" AS REAL) - CAST(\\\"c3\\\" AS REAL)) * 1.0 / CAST(\\\"c3\\\" AS REAL) AS q4_growth FROM t6 WHERE _row = 2\"}],\"withdraw_evidence\":[{\"id\":\"e1\",\"reason\":\"原SQL错误地将Q2累计值当作Q2单期销量，且环比增长率计算公式逻辑错误（未正确基于单期或累计基数计算），需撤回并重新计算。\"}],\"binding_corrections\":[{\"need_id\":\"r2\",\"binding\":\"t6表row2, c4(2019年第二季度累计), c3(2019年第三季度累计), c2(2019年第四季度累计)。Q2单期因缺Q1数据无法计算；Q3单期=c3-c4；Q4单期=c2-c3。\",\"evidence_ids\":[\"new_q1\"]},{\"need_id\":\"r3\",\"binding\":\"基于new_q1查询结果比较Q3与Q4单期销量及累计环比增速。\",\"evidence_ids\":[\"new_q1\"]}],\"requirement_revisions\":[{\"need_id\":\"r2\",\"updates\":{\"formula\":\"Q3单期 = Q3累计 - Q2累计; Q4单期 = Q4累计 - Q3累计; Q2单期因缺Q1数据无法计算\",\"evidence_needed\":\"t6表塑料制品销售量累计值行数据\"},\"evidence_ids\":[\"new_q1\"],\"reason\":\"原公式未考虑Q1缺失导致Q2单期不可算的问题，需修正口径。\"}]}",
+      "{\n  \"checks\": [\n    {\"need\": \"r1\", \"status\": \"supported\", \"evidence_ids\": [\"e2\"], \"issue\": \"none\"},\n    {\"need\": \"r2\", \"status\": \"supported\", \"evidence_ids\": [\"e2\"], \"issue\": \"原e2增速公式逻辑有误，已按单期绝对增量重新核算。\"},\n    {\"need\": \"r3\", \"status\": \"supported\", \"evidence_ids\": [\"e2\"], \"issue\": \"none\"},\n    {\"need\": \"r4\", \"status\": \"supported\", \"evidence_ids\": [\"e2\"], \"issue\": \"none\"}\n  ],\n  \"withdraw_evidence\": [\n    {\"id\": \"e2\", \"reason\": \"原SQL中环比增速公式错误（未基于单期销量基数计算），且Q2单期销量未明确赋值，需重新核算单期绝对值与增量。\"}\n  ],\n  \"queries\": [\n    {\n      \"needs\": [\"r1\", \"r2\", \"r3\"],\n      \"purpose\": \"基于累计值精确计算2019年二、三、四季度塑料制品单期销量及环比绝对增量，用于准确回答销量趋势与增长幅度。\",\n      \"sql\": \"SELECT 'Q2' AS quarter, CAST(\\\"c4\\\" AS REAL) AS q2_cumulative, CAST(\\\"c4\\\" AS REAL) AS q2_single, NULL AS q2_change FROM t6 WHERE _row = 2 UNION ALL SELECT 'Q3' AS quarter, CAST(\\\"c3\\\" AS REAL) AS q3_cumulative, CAST(\\\"c3\\\" AS REAL) - CAST(\\\"c4\\\" AS REAL) AS q3_single, (CAST(\\\"c3\\\" AS REAL) - CAST(\\\"c4\\\" AS REAL)) - CAST(\\\"c4\\\" AS REAL) AS q3_change FROM t6 WHERE _row = 2 UNION ALL SELECT 'Q4' AS quarter, CAST(\\\"c2\\\" AS REAL) AS q4_cumulative, CAST(\\\"c2\\\" AS REAL) - CAST(\\\"c3\\\" AS REAL) AS q4_single, (CAST(\\\"c2\\\" AS REAL) - CAST(\\\"c3\\\" AS REAL)) - (CAST(\\\"c3\\\" AS REAL) - CAST(\\\"c4\\\" AS REAL)) AS q4_change FROM t6 WHERE _row = 2\"\n    }\n  ]\n}"
+    ],
+    "reconciliation": [
+      [
+        {
+          "action": "contest",
+          "id": "e1",
+          "reason": "原SQL错误地将Q2累计值当作Q2单期销量，且环比增长率计算公式逻辑错误（未正确基于单期或累计基数计算），需撤回并重新计算。"
+        }
+      ],
+      [
+        {
+          "action": "contest",
+          "id": "e2",
+          "reason": "原SQL中环比增速公式错误（未基于单期销量基数计算），且Q2单期销量未明确赋值，需重新核算单期绝对值与增量。"
+        }
+      ]
+    ],
+    "final_answer": "\n\n根据《2019年塑料制品销售与库存数据》表（表中提供的是各季度末的**累计销售量**，单位：万吨），通过累计值差分计算各季度单期销量如下：\n\n* **第二季度**：3129.9 万吨\n* **第三季度**：2457.8 万吨（5587.7 - 3129.9）\n* **第四季度**：2111.4 万吨（7699.1 - 5587.7）\n\n**关于“哪段时间增长最猛”的结论：**\n从**单期销量**来看，2019年塑料制品销量实际呈**逐季下降**趋势，并未出现增长。二季度单期销量最高，三季度环比减少约672.1万吨，四季度环比减少约346.4万吨。\n\n若从**累计销量的增量**（即单期销量绝对值）来看，二季度至三季度（即三季度单期）的累计增量最大（2457.8万吨），三季度至四季度累计增量为2111.4万吨。因此，累计销量的扩张速度在二季度至三季度最快，但整体单期销量处于回落态势。",
+    "findings": [
+      "First verifier identifies missing preceding cumulative value and produces e2 with first-period value NULL and available cumulative-level growth rates.",
+      "Second verifier contests e2 and produces e3 with first-period single-period value equal to the first displayed cumulative value, contradicting the retained requirement and memory precondition.",
+      "The second pre-answer verifier uses a call that otherwise could support final answer review; with six calls used after composition and a seven-call cap, the controller does not open a review-and-repair pair.",
+      "A shared skill ID does not enforce a shared metric definition. QueryBuilder guidance says to avoid cumulative-value growth directly, while planner guidance distinguishes valid cumulative-level growth from single-period growth."
+    ],
+    "programmatic_checks": {
+      "e2_first_period_is_null": true,
+      "e2_later_growth_equals_cumulative_delta_over_previous_cumulative": true,
+      "e3_first_period_equals_first_cumulative": true,
+      "sql_errors": 0
+    },
+    "limitations": "Arithmetic checks assume the selected raw row and cumulative interpretation; they do not use reference answer labels or certify every semantic claim."
+  }
+}

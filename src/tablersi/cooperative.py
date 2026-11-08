@@ -297,13 +297,16 @@ class CooperativeAgent:
                 }
             )
         if self.aligned:
+            # Fallback routes have a reason but no semantic decisions. Aligned
+            # planning starts with no keyword-selected skills, so keep it empty.
+            decisions = routing.get("decisions", [])
             # Empty-memory controls also refine once: learning must not receive
             # an unreported extra planning opportunity relative to its control.
             refined = call(
                 "SemanticPlanner",
                 {
                     "draft_contract": contract,
-                    "fixed_skill_selection": routing["decisions"],
+                    "fixed_skill_selection": decisions,
                 },
                 overview,
                 phase="selected_memory_plan",
@@ -344,12 +347,12 @@ class CooperativeAgent:
                     "selected_skill_ids": [skill.id for skill in selected],
                     "reason": "Plan retains original requirement IDs and known tables"
                     if valid
-                    else "Invalid refinement; retain draft and disable learned memory for this turn",
+                    else "Invalid refinement; retain draft and disable downstream learned guidance and skill views",
                 }
             )
             if valid:
                 contract = refined
-                contract["skill_selection"] = routing["decisions"]
+                contract["skill_selection"] = decisions
             else:
                 selected = []
         if self.reconciled:

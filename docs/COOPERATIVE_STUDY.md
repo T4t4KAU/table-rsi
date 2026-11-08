@@ -258,8 +258,11 @@ skills' full planner views. The resulting contract and the same skill set pass
 to the query builder, verifier, and composer. When no skill is selected,
 learned global guidance is also omitted. Refinements must retain all original
 valid requirement IDs and use known table names; invalid refinements retain the
-draft and disable learned memory for the turn. Retaining IDs is a structural
-check, not proof that their natural-language meaning is preserved.
+draft and disable learned guidance and full skill views for subsequent roles.
+The routing index has already been visible to the initial planner, so an empty
+selection or rejected refinement does not erase its possible influence on the
+draft. Retaining IDs is a structural check, not proof that their natural-language
+meaning is preserved.
 
 The empty-memory v6 control receives the same second planning opportunity.
 Both arms retain the seven-call and twelve-query limits; the extra planning
@@ -268,3 +271,64 @@ and tokens must therefore be reported. A v6-v5 gain alone would be a controller
 change, not evidence of learned RSI benefit. Compare taught and empty memory
 within v6 before making that claim. This version is experimental and has no
 approved deployment result yet.
+
+### Why candidate memory can reduce full-point accuracy
+
+The completed diagnostic search in
+`experiments/cooperative_diagnosis_v1/results.json` compares the same v5 solver,
+checkpoint, examples, and limits. Empty memory covers all reference points in
+10/26 turns (55.45% mean point coverage); the joint candidate covers 8/26
+(55.13%); removing only its global guidance gives 6/26 (46.47%). The deletion
+ablation is negative and is not adopted as an improvement.
+
+Only four turn-level scores differ between the empty and full-memory arms.
+Two partial-score gains do not create any fully covered turn, while two losses
+remove full coverage. Consequently a 0.32 percentage-point coverage decline
+corresponds to a 7.69 percentage-point full-point decline. Optimizing average
+coverage or successful SQL execution alone does not guarantee higher full-point
+accuracy. These are model-judged reference coverage scores, not independently
+verified factual correctness.
+
+The earlier v5 traces show different planner and downstream full skill sets in
+21/24 supported turns; all ten candidate skills have all four role views, so
+this is not just omission of a role-specific projection. Other inspected
+failures involve missing requested comparisons or an incorrect date range
+despite successful SQL execution. The verifier sometimes accepts those plans.
+These observations motivate alignment and evidence checks, but do not establish
+that routing mismatch alone caused the measured accuracy difference.
+
+Repeated judging of 52 fixed answers changes five answers' scores at least once
+relative to the original scores. Conditional planner probes also produce
+different text in nine pairs with identical input and nominal seed. These
+findings limit interpretation of a one- or two-turn search difference. Preserve
+primary scores and all failed candidates; evaluate joint changes against a
+matched empty-memory control before using the single independent audit.
+
+The completed v6 **baseline/full-memory pair** in
+`experiments/cooperative_v6/diagnosis_results.json` gives 11/26 versus 8/26 fully
+covered turns, with mean coverage 62.37% versus 56.28%. Both arms make 145 model
+calls; their planner/downstream full-view mismatch count is zero. Thus fixing
+that mismatch did not establish learned-memory benefit. The paired cluster
+bootstrap interval still includes zero: this search run does not prove a
+population-wide harmful effect. The third, no-global-guidance arm crashed after
+12/13 dialogs when a fallback route lacked `decisions`; it has no aggregate.
+Missing and invalid routing selections now have regression tests and continue
+with an empty selection. The frozen failed run is preserved unchanged.
+
+One v6 trace exposes a more specific failure: an initial verification correctly
+leaves the first single-period value unknown when the preceding cumulative
+value is absent. It also computes valid cumulative-level growth rates. The next
+verification contests that evidence, restores the unsupported assumption that
+the first displayed cumulative value is a single-period value, and the answer
+adopts it. All three SQL queries execute successfully. In addition, the skill's
+planner distinguishes cumulative-level growth from single-period growth, while
+its query-builder instruction broadly discourages computing growth directly
+from cumulative values. Shared skill IDs therefore do not ensure consistent
+metric definitions or enforce the stated preconditions.
+
+In this run the empty-memory arm uses two pre-answer verifier calls in 3/24
+supported turns, versus 5/24 with memory. Those paths leave insufficient budget
+for the controller's final review-and-repair pair. These observed control-flow
+and semantic failures motivate executable precondition checks and explicit
+metric definitions; they are not evidence that another natural-language rule
+or another verification call will necessarily improve accuracy.

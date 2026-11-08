@@ -577,3 +577,54 @@ def test_aligned_memory_replans_before_query_and_preserves_requirements(
         assert "GLOBAL_GUIDANCE" not in client.messages[2][1]["content"]
     event = next(s for s in result["trace"] if s["role"] == "MemoryPlanning")
     assert event["status"] == ("rejected" if drop_requirement else "accepted")
+
+
+@pytest.mark.parametrize("invalid_selection", [False, True])
+def test_aligned_memory_handles_router_fallback(tmp_path, invalid_selection):
+    store = make_store(tmp_path)
+    bundle = Bundle(
+        skills=[
+            Skill(
+                "known",
+                ["value"],
+                {"SemanticPlanner": "RULE", "QueryBuilder": "QUERY_RULE"},
+                "lookup values",
+            )
+        ],
+        role_guidance={"QueryBuilder": "GLOBAL_RULE"},
+    )
+    draft = {"tables": ["t0"], "requirements": [{"id": "r1", "need": "value"}]}
+    if invalid_selection:
+        draft["skill_selection"] = [
+            {"skill_id": "unknown", "reason": "lookup", "need_ids": ["r1"]}
+        ]
+
+    class Local:
+        def __init__(self):
+            self.messages = []
+            self.responses = iter([draft, draft, {}, {}, "Value is 3.", {}])
+
+        def chat(self, messages, **kwargs):
+            self.messages.append(messages)
+            response = next(self.responses)
+            return {
+                "content": response
+                if isinstance(response, str)
+                else json.dumps(response),
+                "usage": {"prompt_tokens": 20, "completion_tokens": 10},
+            }
+
+    client = Local()
+    result = CooperativeAgent(client, bundle, aligned=True).solve(store, "value?")
+    assert result["answer"] == "Value is 3."
+    assert result["retrieved_skill_ids"] == []
+    assert result["budget"]["used_calls"] == 6
+    assert result["budget"]["unknown_usage"] == 0
+    router = next(step for step in result["trace"] if step["role"] == "MemoryRouter")
+    assert router["mode"] == "keyword_fallback"
+    assert router["reason"] == (
+        "invalid selection" if invalid_selection else "missing selection"
+    )
+    assert '"fixed_skill_selection": []' in client.messages[1][1]["content"]
+    assert "GLOBAL_RULE" not in client.messages[2][1]["content"]
+    assert result["working_memory"]["current_contract"]["skill_selection"] == []
