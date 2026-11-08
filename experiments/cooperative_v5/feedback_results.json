@@ -1,0 +1,561 @@
+{
+  "scope": "Predeployment search, 13 clusters and 26 turns; no independent audit or deployment consumed",
+  "model": "Qwen3.6-35B-A3B-FP8",
+  "solver": "cooperative_v5",
+  "budget": {
+    "thinking_tokens": 4096,
+    "generation_tokens_per_call": 8192,
+    "max_model_calls": 7,
+    "max_sql_calls": 12
+  },
+  "teacher": {
+    "model": "deepseek-v4-pro",
+    "effort": "high",
+    "inputs": "317 curriculum turns in 71 dialogs from 17 designated teaching clusters, plus 34 actual student turns from those clusters",
+    "review": "Two model-assisted checks against fixed mathematical contracts before any scored candidate evaluation; raw generations and corrections retained"
+  },
+  "summaries": {
+    "baseline": {
+      "dialogs": 13,
+      "turns": 26,
+      "judge_failures": 0,
+      "turn_macro_coverage": 0.5128205128205128,
+      "dialog_macro_coverage": 0.5128205128205128,
+      "micro_coverage": 0.45161290322580644,
+      "fully_covered_turn_rate": 0.3076923076923077,
+      "local_model_calls": 125,
+      "local_input_tokens": 775442,
+      "local_output_tokens": 418441,
+      "database_calls": 53,
+      "unknown_model_usage_calls": 0,
+      "successful_queries": 50,
+      "failed_queries": 3,
+      "judge_input_tokens": 25796,
+      "judge_output_tokens": 5814,
+      "mean_turn_latency_s": 144.56463766897707
+    },
+    "binding_evidence": {
+      "dialogs": 13,
+      "turns": 26,
+      "judge_failures": 0,
+      "turn_macro_coverage": 0.5384615384615384,
+      "dialog_macro_coverage": 0.5384615384615384,
+      "micro_coverage": 0.4838709677419355,
+      "fully_covered_turn_rate": 0.2692307692307692,
+      "local_model_calls": 126,
+      "local_input_tokens": 880750,
+      "local_output_tokens": 451989,
+      "database_calls": 52,
+      "unknown_model_usage_calls": 0,
+      "successful_queries": 45,
+      "failed_queries": 7,
+      "judge_input_tokens": 27145,
+      "judge_output_tokens": 5804,
+      "mean_turn_latency_s": 155.52270860451523
+    },
+    "complete_answer": {
+      "dialogs": 13,
+      "turns": 26,
+      "judge_failures": 0,
+      "turn_macro_coverage": 0.46025641025641023,
+      "dialog_macro_coverage": 0.46025641025641023,
+      "micro_coverage": 0.3870967741935484,
+      "fully_covered_turn_rate": 0.2692307692307692,
+      "local_model_calls": 128,
+      "local_input_tokens": 935016,
+      "local_output_tokens": 455931,
+      "database_calls": 59,
+      "unknown_model_usage_calls": 0,
+      "successful_queries": 56,
+      "failed_queries": 3,
+      "judge_input_tokens": 26686,
+      "judge_output_tokens": 6293,
+      "mean_turn_latency_s": 158.20675953044199
+    },
+    "cooperative_memory": {
+      "dialogs": 13,
+      "turns": 26,
+      "judge_failures": 0,
+      "turn_macro_coverage": 0.5564102564102564,
+      "dialog_macro_coverage": 0.5564102564102564,
+      "micro_coverage": 0.5053763440860215,
+      "fully_covered_turn_rate": 0.34615384615384615,
+      "local_model_calls": 128,
+      "local_input_tokens": 915050,
+      "local_output_tokens": 452583,
+      "database_calls": 52,
+      "unknown_model_usage_calls": 0,
+      "successful_queries": 50,
+      "failed_queries": 2,
+      "judge_input_tokens": 27671,
+      "judge_output_tokens": 5845,
+      "mean_turn_latency_s": 156.54453066476765
+    }
+  },
+  "paired_comparison": {
+    "method": "paired cluster bootstrap percentile; descriptive, no multiple-comparison correction",
+    "replicates": 4000,
+    "seed": 20261108,
+    "runs": [
+      {
+        "dialogs": 13,
+        "clusters": 13,
+        "turn_macro_coverage": 0.5128205128205128,
+        "cluster_bootstrap_95_ci": [
+          0.34230769230769226,
+          0.6692307692307692
+        ],
+        "gain_vs_first": 0.0,
+        "paired_gain_95_ci": [
+          0.0,
+          0.0
+        ],
+        "fully_covered_turn_rate": 0.3076923076923077,
+        "full_point_bootstrap_95_ci": [
+          0.19230769230769232,
+          0.4230769230769231
+        ],
+        "full_point_gain_vs_first": 0.0,
+        "full_point_paired_gain_95_ci": [
+          0.0,
+          0.0
+        ],
+        "name": "baseline"
+      },
+      {
+        "dialogs": 13,
+        "clusters": 13,
+        "turn_macro_coverage": 0.5384615384615384,
+        "cluster_bootstrap_95_ci": [
+          0.3666666666666666,
+          0.7051282051282051
+        ],
+        "gain_vs_first": 0.02564102564102566,
+        "paired_gain_95_ci": [
+          -0.09294871794871795,
+          0.1282051282051282
+        ],
+        "fully_covered_turn_rate": 0.2692307692307692,
+        "full_point_bootstrap_95_ci": [
+          0.11538461538461539,
+          0.46153846153846156
+        ],
+        "full_point_gain_vs_first": -0.03846153846153849,
+        "full_point_paired_gain_95_ci": [
+          -0.15384615384615385,
+          0.07692307692307693
+        ],
+        "name": "binding_evidence"
+      },
+      {
+        "dialogs": 13,
+        "clusters": 13,
+        "turn_macro_coverage": 0.4602564102564102,
+        "cluster_bootstrap_95_ci": [
+          0.28397435897435896,
+          0.6365384615384616
+        ],
+        "gain_vs_first": -0.0525641025641026,
+        "paired_gain_95_ci": [
+          -0.1872115384615385,
+          0.09685897435897468
+        ],
+        "fully_covered_turn_rate": 0.2692307692307692,
+        "full_point_bootstrap_95_ci": [
+          0.11538461538461539,
+          0.46153846153846156
+        ],
+        "full_point_gain_vs_first": -0.03846153846153849,
+        "full_point_paired_gain_95_ci": [
+          -0.19230769230769232,
+          0.11538461538461542
+        ],
+        "name": "complete_answer"
+      },
+      {
+        "dialogs": 13,
+        "clusters": 13,
+        "turn_macro_coverage": 0.5564102564102564,
+        "cluster_bootstrap_95_ci": [
+          0.35128205128205126,
+          0.7487339743589743
+        ],
+        "gain_vs_first": 0.04358974358974366,
+        "paired_gain_95_ci": [
+          -0.0910576923076923,
+          0.16987179487179482
+        ],
+        "fully_covered_turn_rate": 0.34615384615384615,
+        "full_point_bootstrap_95_ci": [
+          0.15384615384615385,
+          0.5769230769230769
+        ],
+        "full_point_gain_vs_first": 0.038461538461538436,
+        "full_point_paired_gain_95_ci": [
+          -0.15384615384615385,
+          0.23076923076923078
+        ],
+        "name": "cooperative_memory"
+      }
+    ]
+  },
+  "trace_summaries": {
+    "complete_answer": {
+      "scope": "Observed events only. Retrieval/projection does not establish application, correctness, or causal benefit.",
+      "complete": true,
+      "dialogs": 13,
+      "turns": 26,
+      "turns_with_retrieved_skills": 24,
+      "retrieved_turn_counts": {
+        "data_row_predicate_filtering": 9,
+        "requirement_evidence_loop": 22,
+        "trend_interval_analysis": 14,
+        "text_numeric_cleaning_unit_parsing": 4,
+        "cumulative_to_single_period_diff": 2,
+        "proxy_analysis_for_evaluation": 3,
+        "aggregate_before_ratio": 1,
+        "multi_table_union_extreme": 1
+      },
+      "projected_role_call_counts": {
+        "QueryBuilder:data_row_predicate_filtering": 9,
+        "QueryBuilder:requirement_evidence_loop": 22,
+        "QueryBuilder:trend_interval_analysis": 14,
+        "EvidenceVerifier:data_row_predicate_filtering": 19,
+        "EvidenceVerifier:requirement_evidence_loop": 49,
+        "EvidenceVerifier:trend_interval_analysis": 32,
+        "AnswerComposer:data_row_predicate_filtering": 9,
+        "AnswerComposer:requirement_evidence_loop": 25,
+        "AnswerComposer:trend_interval_analysis": 17,
+        "QueryBuilder:text_numeric_cleaning_unit_parsing": 4,
+        "EvidenceVerifier:text_numeric_cleaning_unit_parsing": 10,
+        "AnswerComposer:text_numeric_cleaning_unit_parsing": 5,
+        "SemanticPlanner:trend_interval_analysis": 2,
+        "SemanticPlanner:multi_table_unit_completion": 4,
+        "QueryBuilder:cumulative_to_single_period_diff": 2,
+        "EvidenceVerifier:cumulative_to_single_period_diff": 4,
+        "AnswerComposer:cumulative_to_single_period_diff": 3,
+        "QueryBuilder:proxy_analysis_for_evaluation": 3,
+        "EvidenceVerifier:proxy_analysis_for_evaluation": 6,
+        "AnswerComposer:proxy_analysis_for_evaluation": 3,
+        "SemanticPlanner:field_arithmetic_validation": 2,
+        "QueryBuilder:aggregate_before_ratio": 1,
+        "EvidenceVerifier:aggregate_before_ratio": 2,
+        "AnswerComposer:aggregate_before_ratio": 1,
+        "QueryBuilder:multi_table_union_extreme": 1,
+        "EvidenceVerifier:multi_table_union_extreme": 2,
+        "AnswerComposer:multi_table_union_extreme": 1
+      },
+      "role_calls": {
+        "SemanticPlanner": 24,
+        "QueryBuilder": 24,
+        "EvidenceVerifier": 53,
+        "AnswerComposer": 27
+      },
+      "working_memory_events": {
+        "contest": 8
+      },
+      "answer_patch_outcomes": {},
+      "memory_routing_modes": {
+        "semantic_selection": 24
+      },
+      "errors": {
+        "sql_failure": 3
+      },
+      "descriptive_language_breakdown": {
+        "contains_chinese": {
+          "turns": 16,
+          "retrieved": 16,
+          "full": 4,
+          "coverage_sum": 6.966666666666667
+        },
+        "english": {
+          "turns": 10,
+          "retrieved": 8,
+          "full": 3,
+          "coverage_sum": 5.0
+        }
+      }
+    },
+    "baseline": {
+      "scope": "Observed events only. Retrieval/projection does not establish application, correctness, or causal benefit.",
+      "complete": true,
+      "dialogs": 13,
+      "turns": 26,
+      "turns_with_retrieved_skills": 0,
+      "retrieved_turn_counts": {},
+      "projected_role_call_counts": {},
+      "role_calls": {
+        "SemanticPlanner": 24,
+        "QueryBuilder": 24,
+        "EvidenceVerifier": 53,
+        "AnswerComposer": 24
+      },
+      "working_memory_events": {
+        "contest": 8,
+        "binding_correction": 2
+      },
+      "answer_patch_outcomes": {},
+      "memory_routing_modes": {},
+      "errors": {
+        "sql_failure": 3
+      },
+      "descriptive_language_breakdown": {
+        "contains_chinese": {
+          "turns": 16,
+          "retrieved": 0,
+          "full": 5,
+          "coverage_sum": 8.5
+        },
+        "english": {
+          "turns": 10,
+          "retrieved": 0,
+          "full": 3,
+          "coverage_sum": 4.833333333333333
+        }
+      }
+    },
+    "binding_evidence": {
+      "scope": "Observed events only. Retrieval/projection does not establish application, correctness, or causal benefit.",
+      "complete": true,
+      "dialogs": 13,
+      "turns": 26,
+      "turns_with_retrieved_skills": 19,
+      "retrieved_turn_counts": {
+        "skill_external_eval_boundary": 4,
+        "skill_text_num_cleaning": 2,
+        "skill_missing_vs_zero": 7,
+        "skill_time_window_reconcile": 11,
+        "skill_cumulative_diff": 7,
+        "skill_precise_row_binding": 2,
+        "skill_ratio_aggregation_order": 2
+      },
+      "projected_role_call_counts": {
+        "QueryBuilder:skill_external_eval_boundary": 4,
+        "EvidenceVerifier:skill_external_eval_boundary": 8,
+        "AnswerComposer:skill_external_eval_boundary": 6,
+        "QueryBuilder:skill_text_num_cleaning": 2,
+        "QueryBuilder:skill_missing_vs_zero": 7,
+        "EvidenceVerifier:skill_text_num_cleaning": 5,
+        "EvidenceVerifier:skill_missing_vs_zero": 14,
+        "AnswerComposer:skill_text_num_cleaning": 3,
+        "AnswerComposer:skill_missing_vs_zero": 9,
+        "QueryBuilder:skill_time_window_reconcile": 11,
+        "QueryBuilder:skill_cumulative_diff": 7,
+        "EvidenceVerifier:skill_time_window_reconcile": 25,
+        "EvidenceVerifier:skill_cumulative_diff": 15,
+        "AnswerComposer:skill_time_window_reconcile": 12,
+        "AnswerComposer:skill_cumulative_diff": 8,
+        "SemanticPlanner:skill_time_window_reconcile": 4,
+        "SemanticPlanner:skill_missing_vs_zero": 4,
+        "QueryBuilder:skill_precise_row_binding": 2,
+        "EvidenceVerifier:skill_precise_row_binding": 4,
+        "AnswerComposer:skill_precise_row_binding": 2,
+        "SemanticPlanner:skill_text_num_cleaning": 2,
+        "QueryBuilder:skill_ratio_aggregation_order": 2,
+        "EvidenceVerifier:skill_ratio_aggregation_order": 4,
+        "AnswerComposer:skill_ratio_aggregation_order": 2,
+        "SemanticPlanner:skill_ratio_aggregation_order": 2
+      },
+      "role_calls": {
+        "SemanticPlanner": 24,
+        "QueryBuilder": 24,
+        "EvidenceVerifier": 51,
+        "AnswerComposer": 27
+      },
+      "working_memory_events": {
+        "contest": 7,
+        "binding_correction": 1
+      },
+      "answer_patch_outcomes": {},
+      "memory_routing_modes": {
+        "semantic_selection": 23,
+        "keyword_fallback": 1
+      },
+      "errors": {
+        "sql_failure": 7
+      },
+      "descriptive_language_breakdown": {
+        "contains_chinese": {
+          "turns": 16,
+          "retrieved": 12,
+          "full": 4,
+          "coverage_sum": 8.25
+        },
+        "english": {
+          "turns": 10,
+          "retrieved": 7,
+          "full": 3,
+          "coverage_sum": 5.75
+        }
+      }
+    },
+    "cooperative_memory": {
+      "scope": "Observed events only. Retrieval/projection does not establish application, correctness, or causal benefit.",
+      "complete": true,
+      "dialogs": 13,
+      "turns": 26,
+      "turns_with_retrieved_skills": 21,
+      "retrieved_turn_counts": {
+        "data_row_predicate_filter": 21,
+        "text_numeric_cleaning_missing": 10,
+        "cross_source_time_window": 6,
+        "cumulative_diff_oral": 5,
+        "text_time_sort_window": 5,
+        "group_ratio_aggregation_order": 1,
+        "anomaly_diff_evidence_boundary": 2
+      },
+      "projected_role_call_counts": {
+        "QueryBuilder:data_row_predicate_filter": 21,
+        "QueryBuilder:text_numeric_cleaning_missing": 10,
+        "QueryBuilder:cross_source_time_window": 6,
+        "EvidenceVerifier:data_row_predicate_filter": 47,
+        "EvidenceVerifier:text_numeric_cleaning_missing": 23,
+        "EvidenceVerifier:cross_source_time_window": 14,
+        "AnswerComposer:data_row_predicate_filter": 24,
+        "AnswerComposer:text_numeric_cleaning_missing": 12,
+        "AnswerComposer:cross_source_time_window": 8,
+        "SemanticPlanner:cumulative_diff_oral": 2,
+        "QueryBuilder:cumulative_diff_oral": 5,
+        "EvidenceVerifier:cumulative_diff_oral": 11,
+        "AnswerComposer:cumulative_diff_oral": 7,
+        "SemanticPlanner:cross_source_time_window": 2,
+        "QueryBuilder:text_time_sort_window": 5,
+        "EvidenceVerifier:text_time_sort_window": 11,
+        "AnswerComposer:text_time_sort_window": 5,
+        "SemanticPlanner:text_time_sort_window": 2,
+        "QueryBuilder:group_ratio_aggregation_order": 1,
+        "EvidenceVerifier:group_ratio_aggregation_order": 2,
+        "AnswerComposer:group_ratio_aggregation_order": 1,
+        "QueryBuilder:anomaly_diff_evidence_boundary": 2,
+        "EvidenceVerifier:anomaly_diff_evidence_boundary": 4,
+        "AnswerComposer:anomaly_diff_evidence_boundary": 2,
+        "SemanticPlanner:unit_alignment_derived_ratio": 2
+      },
+      "role_calls": {
+        "SemanticPlanner": 24,
+        "QueryBuilder": 24,
+        "EvidenceVerifier": 53,
+        "AnswerComposer": 27
+      },
+      "working_memory_events": {
+        "contest": 12,
+        "binding_correction": 2
+      },
+      "answer_patch_outcomes": {},
+      "memory_routing_modes": {
+        "semantic_selection": 24
+      },
+      "errors": {
+        "sql_failure": 2
+      },
+      "descriptive_language_breakdown": {
+        "contains_chinese": {
+          "turns": 16,
+          "retrieved": 14,
+          "full": 5,
+          "coverage_sum": 8.383333333333333
+        },
+        "english": {
+          "turns": 10,
+          "retrieved": 7,
+          "full": 4,
+          "coverage_sum": 6.083333333333333
+        }
+      }
+    }
+  },
+  "baseline_variability": {
+    "comparison": "Empty-memory v3 and v5 search baselines, nominal seed42; different serving concurrency",
+    "dialogs": 13,
+    "planner_pairs": 12,
+    "same_inputs": 12,
+    "same_outputs": 0,
+    "rows": [
+      {
+        "id": "tab0058",
+        "planner_available": true,
+        "same_planner_input_hash": true,
+        "same_planner_output": false
+      },
+      {
+        "id": "tab0137",
+        "planner_available": true,
+        "same_planner_input_hash": true,
+        "same_planner_output": false
+      },
+      {
+        "id": "tab0184",
+        "planner_available": true,
+        "same_planner_input_hash": true,
+        "same_planner_output": false
+      },
+      {
+        "id": "tab0191",
+        "planner_available": true,
+        "same_planner_input_hash": true,
+        "same_planner_output": false
+      },
+      {
+        "id": "tab0236",
+        "planner_available": false
+      },
+      {
+        "id": "tab0243",
+        "planner_available": true,
+        "same_planner_input_hash": true,
+        "same_planner_output": false
+      },
+      {
+        "id": "tab0245",
+        "planner_available": true,
+        "same_planner_input_hash": true,
+        "same_planner_output": false
+      },
+      {
+        "id": "tab0247",
+        "planner_available": true,
+        "same_planner_input_hash": true,
+        "same_planner_output": false
+      },
+      {
+        "id": "tab0249",
+        "planner_available": true,
+        "same_planner_input_hash": true,
+        "same_planner_output": false
+      },
+      {
+        "id": "tab0258",
+        "planner_available": true,
+        "same_planner_input_hash": true,
+        "same_planner_output": false
+      },
+      {
+        "id": "tab0300",
+        "planner_available": true,
+        "same_planner_input_hash": true,
+        "same_planner_output": false
+      },
+      {
+        "id": "tab0372",
+        "planner_available": true,
+        "same_planner_input_hash": true,
+        "same_planner_output": false
+      },
+      {
+        "id": "tab0374",
+        "planner_available": true,
+        "same_planner_input_hash": true,
+        "same_planner_output": false
+      }
+    ],
+    "interpretation": "Different sampled outputs do not identify the underlying cause; do not treat same seed as identical trajectories."
+  },
+  "selection_status": "cooperative_memory has the best rank within these four arms; it is not promoted. A separately declared grouped-business recipe candidate and model-development comparisons remain before the one global finalist is chosen.",
+  "limitations": [
+    "All metrics use model-judged reference-point coverage, not human-verified correctness.",
+    "The full-point gain is one additional turn and its descriptive paired confidence interval includes zero.",
+    "A previous equivalent empty-memory v3 baseline scored 9/26 full points and 59.1667% coverage. All twelve available first planner inputs matched v5 hashes while generated outputs differed; underlying serving variability is not isolated.",
+    "Do not attribute comparisons with earlier instructional-v3 candidates solely to feedback or semantic routing: both changed.",
+    "Retrieval and projection counts establish activation only, not correct use or causal benefit."
+  ]
+}

@@ -1,0 +1,1064 @@
+{
+  "scope": "Diagnosis on previously used search examples only. No independent audit or deployment. Conditional planner outcomes are not end-to-end ACC.",
+  "blind_rejudge": {
+    "baseline": [
+      {
+        "repeat": 0,
+        "n": 26,
+        "full_count": 7,
+        "coverage": 0.5032051282051282
+      },
+      {
+        "repeat": 1,
+        "n": 26,
+        "full_count": 8,
+        "coverage": 0.516025641025641
+      },
+      {
+        "repeat": 2,
+        "n": 26,
+        "full_count": 7,
+        "coverage": 0.5032051282051282
+      }
+    ],
+    "cooperative_memory": [
+      {
+        "repeat": 0,
+        "n": 26,
+        "full_count": 8,
+        "coverage": 0.5576923076923077
+      },
+      {
+        "repeat": 1,
+        "n": 26,
+        "full_count": 9,
+        "coverage": 0.5641025641025641
+      },
+      {
+        "repeat": 2,
+        "n": 26,
+        "full_count": 8,
+        "coverage": 0.5403846153846154
+      }
+    ]
+  },
+  "identical_input_controls": [
+    {
+      "id": "tab0058",
+      "turn": 0,
+      "seed": 43,
+      "same_input": true,
+      "same_output": false
+    },
+    {
+      "id": "tab0058",
+      "turn": 0,
+      "seed": 143,
+      "same_input": true,
+      "same_output": false
+    },
+    {
+      "id": "tab0058",
+      "turn": 0,
+      "seed": 243,
+      "same_input": true,
+      "same_output": false
+    },
+    {
+      "id": "tab0184",
+      "turn": 1,
+      "seed": 43,
+      "same_input": true,
+      "same_output": false
+    },
+    {
+      "id": "tab0184",
+      "turn": 1,
+      "seed": 143,
+      "same_input": true,
+      "same_output": false
+    },
+    {
+      "id": "tab0184",
+      "turn": 1,
+      "seed": 243,
+      "same_input": true,
+      "same_output": false
+    },
+    {
+      "id": "tab0243",
+      "turn": 1,
+      "seed": 43,
+      "same_input": true,
+      "same_output": false
+    },
+    {
+      "id": "tab0243",
+      "turn": 1,
+      "seed": 143,
+      "same_input": true,
+      "same_output": false
+    },
+    {
+      "id": "tab0243",
+      "turn": 1,
+      "seed": 243,
+      "same_input": true,
+      "same_output": false
+    }
+  ],
+  "planner_interventions": {
+    "conditions": [
+      "full",
+      "no_global",
+      "no_skill_views",
+      "no_memory"
+    ],
+    "cases": 5,
+    "seeds": [
+      43,
+      143,
+      243
+    ],
+    "observations": {
+      "no_memory": [
+        {
+          "id": "tab0243",
+          "seed": 143,
+          "requirements": 3,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 4431,
+          "output_tokens": 4397
+        },
+        {
+          "id": "tab0058",
+          "seed": 43,
+          "requirements": 1,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 14218,
+          "output_tokens": 4280
+        },
+        {
+          "id": "tab0058",
+          "seed": 243,
+          "requirements": 1,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 14218,
+          "output_tokens": 2386
+        },
+        {
+          "id": "tab0137",
+          "seed": 243,
+          "requirements": 1,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 6210,
+          "output_tokens": 2611
+        },
+        {
+          "id": "tab0243",
+          "seed": 243,
+          "requirements": 3,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 4431,
+          "output_tokens": 4415
+        },
+        {
+          "id": "tab0137",
+          "seed": 143,
+          "requirements": 3,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 6210,
+          "output_tokens": 3594
+        },
+        {
+          "id": "tab0184",
+          "seed": 143,
+          "requirements": 1,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 6734,
+          "output_tokens": 3174
+        },
+        {
+          "id": "tab0258",
+          "seed": 43,
+          "requirements": 4,
+          "budget_mentioned": true,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 7363,
+          "output_tokens": 4640
+        },
+        {
+          "id": "tab0243",
+          "seed": 43,
+          "requirements": 4,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 4431,
+          "output_tokens": 4525
+        },
+        {
+          "id": "tab0137",
+          "seed": 43,
+          "requirements": 1,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 6210,
+          "output_tokens": 4210
+        },
+        {
+          "id": "tab0258",
+          "seed": 243,
+          "requirements": 1,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 7363,
+          "output_tokens": 2437
+        },
+        {
+          "id": "tab0184",
+          "seed": 243,
+          "requirements": 1,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 6734,
+          "output_tokens": 3239
+        },
+        {
+          "id": "tab0058",
+          "seed": 143,
+          "requirements": 1,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 14218,
+          "output_tokens": 3260
+        },
+        {
+          "id": "tab0258",
+          "seed": 143,
+          "requirements": 3,
+          "budget_mentioned": true,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 7363,
+          "output_tokens": 4386
+        },
+        {
+          "id": "tab0184",
+          "seed": 43,
+          "requirements": 1,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 6734,
+          "output_tokens": 2814
+        }
+      ],
+      "no_skill_views": [
+        {
+          "id": "tab0184",
+          "seed": 43,
+          "requirements": 2,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 8302,
+          "output_tokens": 2010
+        },
+        {
+          "id": "tab0137",
+          "seed": 143,
+          "requirements": 4,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 7778,
+          "output_tokens": 4278
+        },
+        {
+          "id": "tab0258",
+          "seed": 243,
+          "requirements": 4,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 8931,
+          "output_tokens": 4879
+        },
+        {
+          "id": "tab0258",
+          "seed": 43,
+          "requirements": 4,
+          "budget_mentioned": true,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 8931,
+          "output_tokens": 3783
+        },
+        {
+          "id": "tab0058",
+          "seed": 143,
+          "requirements": 2,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 15786,
+          "output_tokens": 4020
+        },
+        {
+          "id": "tab0258",
+          "seed": 143,
+          "requirements": 4,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 8931,
+          "output_tokens": 3789
+        },
+        {
+          "id": "tab0184",
+          "seed": 143,
+          "requirements": 2,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 8302,
+          "output_tokens": 3325
+        },
+        {
+          "id": "tab0243",
+          "seed": 243,
+          "requirements": 3,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 5999,
+          "output_tokens": 4767
+        },
+        {
+          "id": "tab0184",
+          "seed": 243,
+          "requirements": 2,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 8302,
+          "output_tokens": 2174
+        },
+        {
+          "id": "tab0137",
+          "seed": 43,
+          "requirements": 4,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 7778,
+          "output_tokens": 4820
+        },
+        {
+          "id": "tab0058",
+          "seed": 43,
+          "requirements": 3,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 15786,
+          "output_tokens": 2749
+        },
+        {
+          "id": "tab0137",
+          "seed": 243,
+          "requirements": 3,
+          "budget_mentioned": false,
+          "five_digit_date_constants": true,
+          "finish_reason": "stop",
+          "input_tokens": 7778,
+          "output_tokens": 3036
+        },
+        {
+          "id": "tab0058",
+          "seed": 243,
+          "requirements": 2,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 15786,
+          "output_tokens": 2519
+        },
+        {
+          "id": "tab0243",
+          "seed": 143,
+          "requirements": 4,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 5999,
+          "output_tokens": 4772
+        },
+        {
+          "id": "tab0243",
+          "seed": 43,
+          "requirements": 4,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 5999,
+          "output_tokens": 4404
+        }
+      ],
+      "full": [
+        {
+          "id": "tab0137",
+          "seed": 243,
+          "requirements": 4,
+          "budget_mentioned": false,
+          "five_digit_date_constants": true,
+          "finish_reason": "stop",
+          "input_tokens": 7959,
+          "output_tokens": 4546
+        },
+        {
+          "id": "tab0243",
+          "seed": 243,
+          "requirements": 4,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 5999,
+          "output_tokens": 4768
+        },
+        {
+          "id": "tab0184",
+          "seed": 243,
+          "requirements": 2,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 8302,
+          "output_tokens": 2729
+        },
+        {
+          "id": "tab0058",
+          "seed": 143,
+          "requirements": 2,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 15786,
+          "output_tokens": 3613
+        },
+        {
+          "id": "tab0184",
+          "seed": 143,
+          "requirements": 2,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 8302,
+          "output_tokens": 3445
+        },
+        {
+          "id": "tab0258",
+          "seed": 243,
+          "requirements": 4,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 9033,
+          "output_tokens": 5098
+        },
+        {
+          "id": "tab0137",
+          "seed": 43,
+          "requirements": 3,
+          "budget_mentioned": false,
+          "five_digit_date_constants": true,
+          "finish_reason": "stop",
+          "input_tokens": 7959,
+          "output_tokens": 3862
+        },
+        {
+          "id": "tab0243",
+          "seed": 43,
+          "requirements": 4,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 5999,
+          "output_tokens": 4826
+        },
+        {
+          "id": "tab0258",
+          "seed": 143,
+          "requirements": 4,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 9033,
+          "output_tokens": 3660
+        },
+        {
+          "id": "tab0258",
+          "seed": 43,
+          "requirements": 5,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 9033,
+          "output_tokens": 5225
+        },
+        {
+          "id": "tab0184",
+          "seed": 43,
+          "requirements": 1,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 8302,
+          "output_tokens": 2208
+        },
+        {
+          "id": "tab0137",
+          "seed": 143,
+          "requirements": 3,
+          "budget_mentioned": false,
+          "five_digit_date_constants": true,
+          "finish_reason": "stop",
+          "input_tokens": 7959,
+          "output_tokens": 4729
+        },
+        {
+          "id": "tab0243",
+          "seed": 143,
+          "requirements": 3,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 5999,
+          "output_tokens": 4664
+        },
+        {
+          "id": "tab0058",
+          "seed": 43,
+          "requirements": 3,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 15786,
+          "output_tokens": 4474
+        },
+        {
+          "id": "tab0058",
+          "seed": 243,
+          "requirements": 3,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 15786,
+          "output_tokens": 3410
+        }
+      ],
+      "no_global": [
+        {
+          "id": "tab0058",
+          "seed": 143,
+          "requirements": 2,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 15691,
+          "output_tokens": 2669
+        },
+        {
+          "id": "tab0058",
+          "seed": 243,
+          "requirements": 2,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 15691,
+          "output_tokens": 3552
+        },
+        {
+          "id": "tab0137",
+          "seed": 143,
+          "requirements": 5,
+          "budget_mentioned": false,
+          "five_digit_date_constants": true,
+          "finish_reason": "stop",
+          "input_tokens": 7864,
+          "output_tokens": 4645
+        },
+        {
+          "id": "tab0184",
+          "seed": 43,
+          "requirements": 1,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 8207,
+          "output_tokens": 2986
+        },
+        {
+          "id": "tab0258",
+          "seed": 143,
+          "requirements": 4,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 8938,
+          "output_tokens": 4378
+        },
+        {
+          "id": "tab0058",
+          "seed": 43,
+          "requirements": 1,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 15691,
+          "output_tokens": 2849
+        },
+        {
+          "id": "tab0258",
+          "seed": 243,
+          "requirements": 5,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 8938,
+          "output_tokens": 3846
+        },
+        {
+          "id": "tab0243",
+          "seed": 143,
+          "requirements": 3,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 5904,
+          "output_tokens": 4684
+        },
+        {
+          "id": "tab0137",
+          "seed": 243,
+          "requirements": 4,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 7864,
+          "output_tokens": 4353
+        },
+        {
+          "id": "tab0184",
+          "seed": 143,
+          "requirements": 1,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 8207,
+          "output_tokens": 2265
+        },
+        {
+          "id": "tab0258",
+          "seed": 43,
+          "requirements": 4,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 8938,
+          "output_tokens": 4660
+        },
+        {
+          "id": "tab0184",
+          "seed": 243,
+          "requirements": 1,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 8207,
+          "output_tokens": 2674
+        },
+        {
+          "id": "tab0243",
+          "seed": 43,
+          "requirements": 3,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 5904,
+          "output_tokens": 4697
+        },
+        {
+          "id": "tab0137",
+          "seed": 43,
+          "requirements": 4,
+          "budget_mentioned": false,
+          "five_digit_date_constants": true,
+          "finish_reason": "stop",
+          "input_tokens": 7864,
+          "output_tokens": 4690
+        },
+        {
+          "id": "tab0243",
+          "seed": 243,
+          "requirements": 3,
+          "budget_mentioned": false,
+          "five_digit_date_constants": false,
+          "finish_reason": "stop",
+          "input_tokens": 5904,
+          "output_tokens": 4666
+        }
+      ]
+    }
+  },
+  "confirmed_mechanisms": [
+    "All role_guidance is projected unconditionally, including when semantic selection returns no skills.",
+    "SemanticPlanner reads keyword-selected full skill views before producing the semantic selection. Rejecting a skill downstream cannot remove prior conditioning.",
+    "The original faulty financial plan mapped the June endpoint to serial 42159, which is June 4. QueryBuilder reused it; successful SQL did not imply valid task scope.",
+    "Full-memory and no-memory verifier probes each accepted that same wrong plan in all three replicates. Removing memory alone did not repair it.",
+    "In the housing case, two of three no-memory planner probes still requested only the largest plot ratio; this omission is not uniquely caused by memory.",
+    "The original baseline cost-dimensions answer scored full once but 0.75 in all three blind rejudges; its originally reported regression is not robust to judge variation."
+  ],
+  "hypotheses_not_proven": [
+    "Unconditional/global and broad index instructions may bias requirement decomposition; whole-dialog ablation still needed.",
+    "Shared upstream assertions can anchor verification; hiding the plan alone also produced an incorrect calendar interpretation and an empty response.",
+    "Added instruction length increased cost, but no output truncations or parse failures occurred in the completed four-arm search; token exhaustion is not demonstrated as the cause."
+  ],
+  "invalidated_diagnostic_conditions": {
+    "conditions": [
+      "computed_dates",
+      "hidden_plan_computed_dates"
+    ],
+    "reason": "Initial regex date evidence included non-date five-digit amounts. Superseded by source-column-only date evidence; all raw outputs retained."
+  },
+  "role_memory_mismatch": {
+    "total": 24,
+    "mismatched": 21,
+    "cases": [
+      {
+        "id": "tab0191",
+        "turn": 0,
+        "planner": [],
+        "downstream": [
+          "data_row_predicate_filter"
+        ]
+      },
+      {
+        "id": "tab0191",
+        "turn": 1,
+        "planner": [],
+        "downstream": [
+          "data_row_predicate_filter"
+        ]
+      },
+      {
+        "id": "tab0137",
+        "turn": 0,
+        "planner": [
+          "cumulative_diff_oral"
+        ],
+        "downstream": [
+          "data_row_predicate_filter",
+          "cross_source_time_window",
+          "cumulative_diff_oral"
+        ]
+      },
+      {
+        "id": "tab0137",
+        "turn": 1,
+        "planner": [
+          "cumulative_diff_oral"
+        ],
+        "downstream": [
+          "data_row_predicate_filter",
+          "cumulative_diff_oral",
+          "cross_source_time_window"
+        ]
+      },
+      {
+        "id": "tab0243",
+        "turn": 1,
+        "planner": [],
+        "downstream": [
+          "text_time_sort_window",
+          "text_numeric_cleaning_missing",
+          "data_row_predicate_filter"
+        ]
+      },
+      {
+        "id": "tab0374",
+        "turn": 0,
+        "planner": [
+          "cross_source_time_window"
+        ],
+        "downstream": [
+          "cumulative_diff_oral",
+          "data_row_predicate_filter",
+          "text_time_sort_window"
+        ]
+      },
+      {
+        "id": "tab0374",
+        "turn": 1,
+        "planner": [
+          "cross_source_time_window"
+        ],
+        "downstream": [
+          "data_row_predicate_filter",
+          "text_time_sort_window"
+        ]
+      },
+      {
+        "id": "tab0249",
+        "turn": 0,
+        "planner": [],
+        "downstream": [
+          "data_row_predicate_filter",
+          "text_numeric_cleaning_missing",
+          "group_ratio_aggregation_order"
+        ]
+      },
+      {
+        "id": "tab0249",
+        "turn": 1,
+        "planner": [],
+        "downstream": [
+          "data_row_predicate_filter",
+          "text_numeric_cleaning_missing",
+          "anomaly_diff_evidence_boundary"
+        ]
+      },
+      {
+        "id": "tab0247",
+        "turn": 0,
+        "planner": [],
+        "downstream": [
+          "data_row_predicate_filter",
+          "text_numeric_cleaning_missing",
+          "cross_source_time_window"
+        ]
+      },
+      {
+        "id": "tab0247",
+        "turn": 1,
+        "planner": [],
+        "downstream": [
+          "data_row_predicate_filter",
+          "text_numeric_cleaning_missing",
+          "cumulative_diff_oral"
+        ]
+      },
+      {
+        "id": "tab0258",
+        "turn": 0,
+        "planner": [
+          "unit_alignment_derived_ratio"
+        ],
+        "downstream": [
+          "data_row_predicate_filter"
+        ]
+      },
+      {
+        "id": "tab0258",
+        "turn": 1,
+        "planner": [
+          "unit_alignment_derived_ratio"
+        ],
+        "downstream": [
+          "data_row_predicate_filter",
+          "text_numeric_cleaning_missing",
+          "anomaly_diff_evidence_boundary"
+        ]
+      },
+      {
+        "id": "tab0372",
+        "turn": 0,
+        "planner": [],
+        "downstream": [
+          "text_time_sort_window",
+          "data_row_predicate_filter"
+        ]
+      },
+      {
+        "id": "tab0372",
+        "turn": 1,
+        "planner": [],
+        "downstream": [
+          "text_time_sort_window",
+          "data_row_predicate_filter",
+          "cumulative_diff_oral"
+        ]
+      },
+      {
+        "id": "tab0300",
+        "turn": 0,
+        "planner": [
+          "text_time_sort_window"
+        ],
+        "downstream": [
+          "cross_source_time_window",
+          "data_row_predicate_filter",
+          "text_numeric_cleaning_missing"
+        ]
+      },
+      {
+        "id": "tab0300",
+        "turn": 1,
+        "planner": [
+          "text_time_sort_window"
+        ],
+        "downstream": [
+          "cross_source_time_window",
+          "data_row_predicate_filter",
+          "text_numeric_cleaning_missing"
+        ]
+      },
+      {
+        "id": "tab0058",
+        "turn": 0,
+        "planner": [],
+        "downstream": [
+          "data_row_predicate_filter"
+        ]
+      },
+      {
+        "id": "tab0058",
+        "turn": 1,
+        "planner": [],
+        "downstream": [
+          "data_row_predicate_filter"
+        ]
+      },
+      {
+        "id": "tab0245",
+        "turn": 0,
+        "planner": [],
+        "downstream": [
+          "data_row_predicate_filter",
+          "text_numeric_cleaning_missing",
+          "cross_source_time_window"
+        ]
+      },
+      {
+        "id": "tab0245",
+        "turn": 1,
+        "planner": [],
+        "downstream": [
+          "data_row_predicate_filter",
+          "text_numeric_cleaning_missing"
+        ]
+      }
+    ]
+  },
+  "source_date_probe": {
+    "scope": "One frozen search case, each condition three replicates; manually inspected detection of the June-4 cutoff, not end-to-end correctness.",
+    "full_memory_no_dates": {
+      "detected": 0,
+      "n": 3
+    },
+    "no_memory_no_dates": {
+      "detected": 0,
+      "n": 3
+    },
+    "hidden_plan_no_dates": {
+      "detected": 0,
+      "n": 3,
+      "other_failures": "One empty response and one incorrect calendar interpretation"
+    },
+    "full_memory_source_dates": {
+      "detected": 1,
+      "n": 3
+    },
+    "hidden_plan_source_dates": {
+      "detected": 0,
+      "n": 3
+    },
+    "date_source": "Only raw t2.c1 rows under the explicit 日期 header; workbook epoch independently verified. Original regex conditions invalidated."
+  },
+  "fresh_end_to_end": {
+    "baseline": {
+      "dialogs": 13,
+      "turns": 26,
+      "judge_failures": 0,
+      "turn_macro_coverage": 0.5544871794871795,
+      "dialog_macro_coverage": 0.5544871794871795,
+      "micro_coverage": 0.4731182795698925,
+      "fully_covered_turn_rate": 0.38461538461538464,
+      "local_model_calls": 129,
+      "local_input_tokens": 779316,
+      "local_output_tokens": 439283,
+      "database_calls": 60,
+      "unknown_model_usage_calls": 0,
+      "successful_queries": 59,
+      "failed_queries": 1,
+      "judge_input_tokens": 27597,
+      "judge_output_tokens": 5840,
+      "mean_turn_latency_s": 172.00608240820182
+    },
+    "full_memory": {
+      "dialogs": 13,
+      "turns": 26,
+      "judge_failures": 0,
+      "turn_macro_coverage": 0.5512820512820513,
+      "dialog_macro_coverage": 0.5512820512820513,
+      "micro_coverage": 0.4838709677419355,
+      "fully_covered_turn_rate": 0.3076923076923077,
+      "local_model_calls": 133,
+      "local_input_tokens": 971631,
+      "local_output_tokens": 474358,
+      "database_calls": 65,
+      "unknown_model_usage_calls": 0,
+      "successful_queries": 60,
+      "failed_queries": 5,
+      "judge_input_tokens": 27536,
+      "judge_output_tokens": 6253,
+      "mean_turn_latency_s": 182.1757638323425
+    },
+    "no_global": {
+      "dialogs": 13,
+      "turns": 26,
+      "judge_failures": 0,
+      "turn_macro_coverage": 0.46474358974358976,
+      "dialog_macro_coverage": 0.46474358974358976,
+      "micro_coverage": 0.40860215053763443,
+      "fully_covered_turn_rate": 0.23076923076923078,
+      "local_model_calls": 127,
+      "local_input_tokens": 894353,
+      "local_output_tokens": 431382,
+      "database_calls": 49,
+      "unknown_model_usage_calls": 0,
+      "successful_queries": 47,
+      "failed_queries": 2,
+      "judge_input_tokens": 25742,
+      "judge_output_tokens": 5788,
+      "mean_turn_latency_s": 171.2434896678807
+    }
+  },
+  "conclusion": "Removing unconditional global guidance alone regressed further in this completed search run; not supported as an improvement. V6 cross-role alignment is a separate experimental controller change and requires matched empty-memory comparison.",
+  "limits": [
+    "Selected regression cases and search evaluations; no independent audit or formal deployment results.",
+    "Whole-dialog arm results are single-generation runs, not replicated estimates.",
+    "No-memory planner interventions fix previous memory-run history; they are conditional probes rather than complete counterfactual dialogs.",
+    "Source-grounded date verification is one manually examined case; cannot estimate general verifier performance."
+  ]
+}
