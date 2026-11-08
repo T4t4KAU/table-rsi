@@ -104,13 +104,21 @@ def evaluate_stage(args, stage, bundle, out):
     data, tasks = tasks_for(root, protocol, stage)
     if args.thinking_budget != protocol["runtime"]["thinking_budget"]:
         raise ValueError("Thinking budget differs from frozen protocol")
+    if (
+        args.local_model != protocol["runtime"]["model"]
+        or args.seed != protocol["runtime"]["seed"]
+    ):
+        raise ValueError("Model or seed differs from frozen protocol")
+    if args.solver_version != protocol["runtime"].get("solver_version", "v1"):
+        raise ValueError("Solver version differs from frozen protocol")
     oracle = (
         root / "scorer_only/oracle.json"
         if stage == "deployment"
         else data / "oracle.json"
     )
     config = SimpleNamespace(**{**vars(args), "data": data, "oracle_file": oracle})
-    records, summary = evaluate(config, bundle, "cooperative", tasks, out)
+    variant = "cooperative_v2" if args.solver_version == "v2" else "cooperative"
+    records, summary = evaluate(config, bundle, variant, tasks, out)
     if stage == "deployment":
         from .evaluate import summarize
 
@@ -371,6 +379,7 @@ def main():
     parser.add_argument("--local-url", default="http://127.0.0.1:31100/v1")
     parser.add_argument("--local-model", default="tablersi-qwen3-32b")
     parser.add_argument("--thinking-budget", type=int, default=1024)
+    parser.add_argument("--solver-version", choices=["v1", "v2"], default="v1")
     parser.add_argument("--judge-url", default="https://api.deepseek.com")
     parser.add_argument("--judge-model", default="deepseek-flash")
     parser.add_argument("--key-file", type=Path)

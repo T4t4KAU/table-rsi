@@ -144,3 +144,72 @@ def test_missing_store_never_calls_local_model(tmp_path):
 
     result = CooperativeAgent(Never(), Bundle()).solve(tmp_path / "absent", "total?")
     assert result["budget"]["used_calls"] == 0
+
+
+def test_reconciled_solver_updates_binding_and_corrects_final_answer(tmp_path):
+    store = make_store(tmp_path)
+
+    class Fake:
+        def __init__(self):
+            self.responses = iter(
+                [
+                    {
+                        "tables": ["t0"],
+                        "requirements": [
+                            {"id": "r1", "need": "total", "binding": "c1"}
+                        ],
+                    },
+                    {
+                        "queries": [
+                            {
+                                "sql": "SELECT SUM(CAST(c1 AS REAL)) AS total FROM t0 WHERE _row > 1"
+                            }
+                        ]
+                    },
+                    {
+                        "withdraw_evidence": [{"id": "e1", "reason": "wrong column"}],
+                        "queries": [
+                            {
+                                "sql": "SELECT SUM(CAST(c2 AS REAL)) AS total FROM t0 WHERE _row > 1"
+                            }
+                        ],
+                    },
+                    {
+                        "binding_corrections": [
+                            {"need_id": "r1", "binding": "c2", "evidence_ids": ["e2"]}
+                        ],
+                        "queries": [],
+                    },
+                    "合计为80。",
+                    {
+                        "checks": [
+                            {"status": "conflict", "issue": "e2 gives 8, not 80"}
+                        ],
+                        "queries": [],
+                        "revise_answer": True,
+                    },
+                    "合计为8，依据e2。",
+                ]
+            )
+
+        def chat(self, messages, **kwargs):
+            value = next(self.responses)
+            return {
+                "content": value if isinstance(value, str) else json.dumps(value),
+                "usage": {"prompt_tokens": 100, "completion_tokens": 20},
+                "elapsed_s": 0.1,
+            }
+
+    result = CooperativeAgent(Fake(), Bundle(), reconciled=True).solve(
+        store, "total value?"
+    )
+    assert result["answer"] == "合计为8，依据e2。"
+    assert result["budget"]["used_calls"] == 7
+    assert result["budget"]["unknown_usage"] == 0
+    assert (
+        result["working_memory"]["current_contract"]["requirements"][0]["binding"]
+        == "c2"
+    )
+    answers = [t for t in result["trace"] if t["role"] == "AnswerComposer"]
+    assert all(t["reads_evidence"] == ["e2"] for t in answers)
+    assert len([t for t in result["trace"] if t["role"] == "Executor"]) == 2

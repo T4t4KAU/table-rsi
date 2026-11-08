@@ -98,10 +98,12 @@ def evaluate(a, state, variant, tasks, out):
         file = out / (task["id"] + ".json")
         if file.exists():
             return json.loads(file.read_text())
-        if variant == "cooperative":
+        if variant in {"cooperative", "cooperative_v2"}:
             from .cooperative import CooperativeAgent
 
-            agent = CooperativeAgent(local, state)
+            agent = CooperativeAgent(
+                local, state, reconciled=variant == "cooperative_v2"
+            )
         else:
             agent = Agent(local, state, variant=variant)
         history = []

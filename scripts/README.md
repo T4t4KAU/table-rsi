@@ -11,7 +11,20 @@ Python modules under `src/tablersi` are the supported library and CLI surface.
 | `download_model.py` | ModelScope download with `--model` and explicit `--out` | `download` extra; model storage |
 | `download_model32.py` | Qwen3-32B default for the same downloader | `download` extra; explicit `--out` |
 | `compare_runs.py` | Paired cluster bootstrap over recorded runs | Completed compatible run directories |
+| `score_answer_revision.py` | Development-only paired scoring of drafts and final answers | Completed development run; scorer credentials |
 | `repair_probe.py` | Synthetic literal-repair/structural-abstention diagnostic | Local model endpoint; explicit `--out` |
+
+## Cooperative study
+
+`run_cooperative_pipeline.py` runs the isolated v1 teaching/search/audit pipeline;
+`cooperative_status.py` reads its progress without modifying results. See
+`docs/COOPERATIVE_STUDY.md` for partition and promotion rules.
+
+`start_model36_fp8.sh` records the v2 Qwen3.6-35B-A3B-FP8 serving configuration.
+Its defaults refer to the experiment server. Set `TABLERSI_ROOT`,
+`TABLERSI_MODEL_PATH`, `TABLERSI_VLLM_PYTHON`, `TABLERSI_GPUS`, and `TABLERSI_PORT`
+for another machine and ensure those GPUs/port are available. It does not stop
+existing services. Download the checkpoint with `download_model.py` first.
 
 ## Historical study helpers
 

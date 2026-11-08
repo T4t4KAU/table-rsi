@@ -123,3 +123,30 @@ any explicit override.
   but does not prove that teacher text is free of benchmark-specific information.
 - The scorer and teacher can use the same cloud model; independent examples
   reduce direct leakage but do not eliminate correlated judge preferences.
+
+## Reconciled working memory experiment (v2)
+
+`--solver-version v2` enables explicit evidence withdrawal and binding revisions,
+dialog-level entity continuity, and a review of the generated answer. The frozen
+protocol must declare the same solver version, model, seed, and thinking budget
+as the evaluator command. The default remains v1 for existing studies.
+
+Development failures motivated this change: a verifier could find the correct
+entity while the answer still used an earlier query for a different entity.
+`WorkingMemory` therefore records which existing evidence supports a revised
+binding and removes explicitly contested evidence from subsequent role inputs.
+The original SQL result and the correction remain in the trace. Corrections are
+model proposals, not semantic ground truth. Previous task contracts help resolve
+follow-up references but cannot establish factual values.
+
+After producing an answer, v2 uses remaining calls to check its actual claims and,
+when concrete corrections or supplementary queries exist, regenerate the answer.
+The seven-call limit remains fixed. This can still introduce regressions; the
+development-only `scripts/score_answer_revision.py` separately scores the initial
+draft and final answer, reusing judgments when their text is identical.
+
+For larger thinking budgets, the per-call generation cap is
+`max(4096, 2 * thinking_budget)`. Thus a 4096-token thinking configuration has an
+8192-token per-call cap. Matched variants must use the same budget. Engineering
+changes, a stronger checkpoint, and learned joint bundles require distinct
+comparisons; none alone establishes recursive improvement.

@@ -10,7 +10,7 @@ from tablersi.state import State
 
 
 @pytest.mark.parametrize("external_oracle", [False, True])
-@pytest.mark.parametrize("variant", ["direct", "cooperative"])
+@pytest.mark.parametrize("variant", ["direct", "cooperative", "cooperative_v2"])
 def test_oracle_is_scorer_only_and_history_uses_predictions(
     tmp_path, monkeypatch, external_oracle, variant
 ):
@@ -80,12 +80,13 @@ def test_oracle_is_scorer_only_and_history_uses_predictions(
         "group": "g",
         "questions": ["First question", "Follow-up question"],
     }
-    state = Bundle() if variant == "cooperative" else State()
+    state = Bundle() if variant.startswith("cooperative") else State()
     records, report = cli.evaluate(a, state, variant, [task], tmp_path / "out")
     assert judge.references == [["SECRET_ORACLE_1"], ["SECRET_ORACLE_2"]]
     assert "SECRET_ORACLE" not in json.dumps(client.requests)
     first_turn_calls = records[0]["turns"][0]["budget"]["used_calls"]
-    assert f"prediction_{first_turn_calls}" in json.dumps(
+    assert records[0]["turns"][0]["answer"].startswith("prediction_")
+    assert records[0]["turns"][0]["answer"] in json.dumps(
         client.requests[first_turn_calls]
     )
     assert report["turns"] == 2

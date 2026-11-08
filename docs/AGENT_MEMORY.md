@@ -6,6 +6,10 @@ immutable per-task snapshots, joint skills with role-specific views, keyword
 retrieval, provenance excluded from solver prompts, and whole-bundle versioning.
 The teacher can propose new abstract skills; search and independent audit gate
 promotion. Candidate skills are not individually verified repair programs.
+The v2 experimental solver also maintains task-local evidence withdrawals and
+evidence-linked binding revisions. These update subsequent role inputs and retain
+the original trace. A previous task contract can guide follow-up entity resolution;
+it is explicitly marked as a model proposal rather than a factual source.
 The richer evidence calibration, lifecycle, and contextual L2 described below
 remain research targets; implementation is not evidence of measured improvement.
 
