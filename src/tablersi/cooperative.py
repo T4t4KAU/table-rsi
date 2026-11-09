@@ -57,6 +57,36 @@ CHECKED_OUTPUTS = {
 }
 
 
+def independent_evidence_view(view):
+    """Keep requested outputs but remove unverified formula/binding anchors.
+
+    The full model proposal stays in working memory and the trace. This projection
+    does not validate the remaining semantic fields or change the user's question.
+    """
+    view = copy.deepcopy(view)
+    for key in ("contract", "current_contract"):
+        contract = view.get(key)
+        if not isinstance(contract, dict):
+            continue
+        requirements = contract.get("requirements", [])
+        if not isinstance(requirements, list):
+            continue
+        contract["requirements"] = [
+            {
+                k: v
+                for k, v in r.items()
+                if k in {"id", "need", "kind", "entity", "metric", "time_scope"}
+            }
+            for r in requirements
+            if isinstance(r, dict)
+        ]
+    view.pop("correction_history", None)
+    view["planning_status"] = (
+        "Unverified planning formulas/bindings are omitted from this review/composition view. Reconstruct metric meaning from the user question, raw cells and tool evidence. Tool calculation_notes describe unsatisfied arithmetic preconditions; earlier model assertions cannot supply missing operands."
+    )
+    return view
+
+
 class CooperativeAgent:
     def __init__(
         self,
@@ -162,6 +192,10 @@ class CooperativeAgent:
             )
             if working_memory:
                 view = {**view, **working_memory.project()}
+            if self.checked and role in {"EvidenceVerifier", "AnswerComposer"}:
+                view = independent_evidence_view(view)
+                if role == "EvidenceVerifier" or "draft_answer" not in view:
+                    view.pop("checks", None)
             prompt = (
                 "本轮输入：\n"
                 + json.dumps(working, ensure_ascii=False)

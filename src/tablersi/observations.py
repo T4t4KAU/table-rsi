@@ -117,6 +117,7 @@ def _compact_evidence_metadata(records, max_chars):
                 "verification_scope",
                 "preconditions",
                 "issues",
+                "calculation_notes",
             )
             if key in record
         ]
@@ -161,6 +162,7 @@ def evidence_text(evidence, max_chars=18000):
                         "preconditions",
                         "issues",
                         "verification_scope",
+                        "calculation_notes",
                     )
                     if k in item
                 }

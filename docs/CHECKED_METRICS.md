@@ -62,6 +62,13 @@ final verification, and optional correction. New tools add no model calls.
 This changes the controller jointly with the executor; a v6/v7 comparison alone
 does not isolate their individual causal effects.
 
+Verifier/composer projections preserve requested outputs but omit unverified
+planning formulas and bindings. The original proposal remains in the trace.
+Pre-answer composition and verification do not repeat earlier model checks as
+factual evidence. Explicit runtime notes explain missing arithmetic operands.
+This reduces an observed anchoring path; it does not enforce factual correctness
+of every sentence or prove that an LLM respects all unknown-value constraints.
+
 ## Contrastive teaching
 
 `cooperative_study teach --episodes BASE --contrast-episodes NEW --solver-version
@@ -89,5 +96,10 @@ scored evaluation. The first teaching probe did not call the new tool; its
 traces are retained, and the output protocol was unified before any new scored
 evaluation. A second probe exposed typed metadata lost by the old SQL-only
 projection and string requests silently skipped by the executor; both paths
-now have regression coverage. The full suite has 112 passing tests. End-to-end
-gains must be reported separately from these checks.
+now have regression coverage. A third probe still copied an incorrect planning
+formula despite a correct tool result; formula-free review/composition and
+explicit missing-precondition notes address that path. The fourth probe no
+longer imputed the missing second-quarter single-period value in the diagnosed
+case, but still overstated the scope of a maximum comparison. It is not a fully
+verified factual answer. The full suite has 113 passing tests. End-to-end gains
+must be reported separately from these checks.

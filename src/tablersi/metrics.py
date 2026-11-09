@@ -154,7 +154,7 @@ def evaluate_metric(spec, source):
         "verification_scope": "Raw-cell arithmetic only. Binding, unit, calendar, and relevance remain model proposals; rates are fractions, not percentages.",
     }
     if op == "series":
-        output, singles = [], []
+        output, singles, notes = [], [], []
         for i, (point, value) in enumerate(zip(points, values)):
             previous = values[i - 1] if i else None
             same_cycle = i > 0 and point.get("cycle") == points[i - 1].get("cycle")
@@ -167,6 +167,15 @@ def evaluate_metric(spec, source):
             single_delta, single_rate = _change(
                 single, singles[i - 1] if i and adjacent else None
             )
+            label = point.get("label", str(point["period"]))
+            if cumulative and single is None:
+                notes.append(
+                    f"{label}：单期量未能由所列单元格推导；缺少可用的同周期相邻前期累计值。该期累计水平不能直接充当工具计算的单期量。"
+                )
+            if cumulative and single_rate is None:
+                notes.append(
+                    f"{label}：单期环比未能计算；需要本期及前期的单期量，且前期单期量为正。不能拿累计水平增幅替代。"
+                )
             output.append(
                 [
                     point.get("label", str(point["period"])),
@@ -199,6 +208,7 @@ def evaluate_metric(spec, source):
                 "level_relative_change": _float(rate),
             },
             preconditions="Single-period values require adjacent observed cumulative periods in the same declared cycle. First displayed cumulative value is never imputed as a single-period value. Missing/invalid operands and nonpositive growth bases produce null.",
+            calculation_notes=notes,
         )
     else:
         value = None

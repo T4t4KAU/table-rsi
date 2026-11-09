@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from tablersi.cooperative import CooperativeAgent
+from tablersi.cooperative import CooperativeAgent, independent_evidence_view
 from tablersi.data import build_store
 from tablersi.memory import Bundle, Skill, validate_teacher_abstraction
 from tablersi.observations import Observations, evidence_text
@@ -15,6 +15,26 @@ def make_store(tmp_path):
     store = tmp_path / "store"
     build_store(source, store)
     return store
+
+
+def test_independent_review_removes_wrong_formula_without_erasing_user_needs():
+    requirement = {
+        "id": "r1",
+        "need": "Compare periods",
+        "entity": "sales",
+        "formula": "first cumulative = first period",
+        "binding": "unverified",
+    }
+    view = {
+        "current_contract": {"requirements": [requirement]},
+        "draft_answer": "draft",
+    }
+    projected = independent_evidence_view(view)
+    assert projected["current_contract"]["requirements"] == [
+        {"id": "r1", "need": "Compare periods", "entity": "sales"}
+    ]
+    assert projected["draft_answer"] == "draft"
+    assert "formula" in view["current_contract"]["requirements"][0]
 
 
 def test_checked_solver_executes_raw_cell_metric_and_reserves_final_repair(tmp_path):
