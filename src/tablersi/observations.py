@@ -108,7 +108,16 @@ def _compact_evidence_metadata(records, max_chars):
         candidates = [
             (len(json.dumps(record[key], ensure_ascii=False, default=str)), i, key)
             for i, record in enumerate(records)
-            for key in ("sql", "purpose", "error", "columns")
+            for key in (
+                "sql",
+                "purpose",
+                "error",
+                "columns",
+                "source_cells",
+                "verification_scope",
+                "preconditions",
+                "issues",
+            )
             if key in record
         ]
         if not candidates:
@@ -137,6 +146,25 @@ def evidence_text(evidence, max_chars=18000):
             in {"id", "sql", "purpose", "ok", "error", "columns", "rows", "truncated"}
         }
         record["rows"] = list(record.get("rows", []))
+        if item.get("kind") == "checked_metric":
+            # Do not erase metric identity or the cumulative/period distinction
+            # when projecting a typed computation into the next role's prompt.
+            record.update(
+                {
+                    k: item[k]
+                    for k in (
+                        "kind",
+                        "metric_contract",
+                        "source_cells",
+                        "normalized_value_unit",
+                        "interval",
+                        "preconditions",
+                        "issues",
+                        "verification_scope",
+                    )
+                    if k in item
+                }
+            )
         output.append(record)
     original = deepcopy(output)
     if not _trim_evidence_rows(output, max_chars):

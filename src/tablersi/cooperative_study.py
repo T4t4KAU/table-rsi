@@ -11,6 +11,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from .cli import evaluate, select, write
+from .contrastive import compare_training
 from .memory import ROLES, Bundle, fingerprint, validate_teacher_abstraction
 from .model import Client, json_object
 from .observations import Observations
@@ -150,6 +151,8 @@ def teach(args):
     client = Client(args.judge_url, args.judge_model, args.key_file, local=False)
     parent = Bundle.load(args.bundle) if args.bundle else Bundle()
     source = Path(args.episodes)
+    contrast = getattr(args, "contrast_episodes", None)
+    contrast = Path(contrast) if contrast else None
     config = {
         "protocol_hash": fingerprint(protocol),
         "parent": parent.hash,
@@ -160,6 +163,15 @@ def teach(args):
             ).hexdigest()
             for t in tasks
         },
+        "contrast_episode_hashes": {
+            t["id"]: hashlib.sha256(
+                (contrast / (t["id"] + ".json")).read_bytes()
+            ).hexdigest()
+            for t in tasks
+        }
+        if contrast
+        else None,
+        "solver_version": args.solver_version,
     }
     if (out / "config.json").exists() and read(out / "config.json") != config:
         raise ValueError("Cannot mix incompatible teaching runs")
@@ -172,6 +184,11 @@ def teach(args):
         episode = read(source / (task["id"] + ".json"))
         if episode["id"] != task["id"] or episode["cluster"] != task["cluster"]:
             raise ValueError("Episode provenance mismatch")
+        comparison = (
+            compare_training(task, episode, read(contrast / (task["id"] + ".json")))
+            if contrast
+            else None
+        )
         cells = ""
         if task["supported"]:
             cells = Observations(data / "stores" / task["group"]).render(
@@ -207,6 +224,15 @@ def teach(args):
             + "\n训练经历："
             + json.dumps(evidence, ensure_ascii=False)
         )
+        if comparison is not None:
+            prompt += (
+                "\n同任务配对轨迹（顺序不是优劣标签）："
+                + json.dumps(comparison, ensure_ascii=False)
+                + "\n必须同时学习保留正确内容与修复错误。对评分不变的任务也检查共同成功条件；"
+                "对损伤案例明确不应触发的条件。不要认为候选总比基线好，程序算术正确也不等于语义正确。"
+                "joint_changes中每项增加counterexample、preserve、verification字段；"
+                "前提、反例和检验必须能在正式任务原始证据中观察，不能依赖教学标签。"
+            )
         response = client.chat(
             [{"role": "user", "content": prompt}],
             max_tokens=3000,
@@ -245,6 +271,17 @@ def teach(args):
             + "\n训练经验："
             + json.dumps([d["diagnosis"] for d in diagnoses], ensure_ascii=False)
         )
+        if args.solver_version == "v7":
+            from .cooperative import CHECKED_CONTRACTS
+
+            prompt += (
+                "\n新运行时的固定工具与约束："
+                + json.dumps(CHECKED_CONTRACTS, ensure_ascii=False)
+                + "\n经验必须与工具定义一致，不重复写一套冲突公式。"
+                "在applicability写可观察的触发条件，exclusions写反例和不触发条件；"
+                "role_views分别写配套动作、保持已有正确结果的条件、核验方式。"
+                "允许多个角色共同改变，不要求单角色独立获益。工具示例中的坐标不能写入记忆。"
+            )
         for attempt in range(3):
             response = client.chat(
                 [{"role": "user", "content": prompt}],
@@ -393,13 +430,16 @@ def main():
     )
     parser.add_argument("--bundle", type=Path)
     parser.add_argument("--episodes", type=Path)
+    parser.add_argument("--contrast-episodes", type=Path)
     parser.add_argument("--candidates", type=Path)
     parser.add_argument("--repo", type=Path)
     parser.add_argument("--local-url", default="http://127.0.0.1:31100/v1")
     parser.add_argument("--local-model", default="tablersi-qwen3-32b")
     parser.add_argument("--thinking-budget", type=int, default=1024)
     parser.add_argument(
-        "--solver-version", choices=["v1", "v2", "v3", "v4", "v5", "v6"], default="v1"
+        "--solver-version",
+        choices=["v1", "v2", "v3", "v4", "v5", "v6", "v7"],
+        default="v1",
     )
     parser.add_argument("--judge-url", default="https://api.deepseek.com")
     parser.add_argument("--judge-model", default="deepseek-flash")

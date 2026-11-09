@@ -38,6 +38,25 @@ def test_binding_change_requires_successful_external_execution():
     assert memory.contract["requirements"][0]["binding"] == "replacement"
 
 
+def test_checked_arithmetic_cannot_be_withdrawn_by_an_unsupported_opinion():
+    memory = WorkingMemory({}, guard_checked_metrics=True)
+    evidence = [
+        {"id": "e1", "kind": "checked_metric", "ok": True},
+        {"id": "e2", "ok": False},
+        {"id": "e3", "ok": True},
+    ]
+    item = {"id": "e1", "reason": "wrong metric binding"}
+    for support in (None, [], ["e1"], ["e2"], ["future_e4"]):
+        review = {"withdraw_evidence": [{**item, "counterevidence_ids": support}]}
+        assert not memory.apply(review, evidence)
+        assert "e1" not in memory.contested
+    assert len(memory.project()["rejected_corrections"]) == 5
+    assert memory.apply(
+        {"withdraw_evidence": [{**item, "counterevidence_ids": ["e3"]}]}, evidence
+    )
+    assert "e1" in memory.contested
+
+
 def test_unknown_evidence_and_malformed_fields_cannot_rebind():
     memory = WorkingMemory({"requirements": [{"id": "r1", "binding": "original"}]})
     evidence = [{"id": "e1"}]

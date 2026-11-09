@@ -19,6 +19,8 @@ from tablersi.state import State
         "cooperative_v3",
         "cooperative_v4",
         "cooperative_v5",
+        "cooperative_v6",
+        "cooperative_v7",
     ],
 )
 def test_oracle_is_scorer_only_and_history_uses_predictions(

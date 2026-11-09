@@ -34,7 +34,7 @@ def main():
     p.add_argument("--thinking-budget", type=int)
     p.add_argument(
         "--solver-version",
-        choices=["v1", "v2", "v3", "v4", "v5", "v6"],
+        choices=["v1", "v2", "v3", "v4", "v5", "v6", "v7"],
         default="v1",
         help="Cooperative runtime matching the frozen release experiment",
     )
@@ -77,6 +77,7 @@ def main():
             patched=a.solver_version == "v4",
             routed=a.solver_version == "v5",
             aligned=a.solver_version == "v6",
+            checked=a.solver_version == "v7",
         )
     else:
         agent = Agent(client, State.load(a.state) if a.state else State())

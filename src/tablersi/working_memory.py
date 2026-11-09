@@ -14,8 +14,10 @@ from dataclasses import dataclass, field
 class WorkingMemory:
     contract: dict
     allow_requirement_revisions: bool = False
+    guard_checked_metrics: bool = False
     revisions: list[dict] = field(default_factory=list)
     contested: dict[str, str] = field(default_factory=dict)
+    rejected: list[dict] = field(default_factory=list)
 
     def __post_init__(self):
         self.contract = copy.deepcopy(self.contract)
@@ -26,6 +28,11 @@ class WorkingMemory:
     def apply(self, review, evidence):
         known = {e["id"] for e in evidence}
         executed = {e["id"] for e in evidence if e.get("ok") is True}
+        checked = {
+            e["id"]
+            for e in evidence
+            if e.get("kind") == "checked_metric" and e.get("ok") is True
+        }
         requirements = {
             r["id"]: r
             for r in self.contract.get("requirements", [])
@@ -45,6 +52,27 @@ class WorkingMemory:
                     and isinstance(reason, str)
                     and reason.strip()
                 ):
+                    if self.guard_checked_metrics and ident in checked:
+                        support = item.get("counterevidence_ids")
+                        if (
+                            not isinstance(support, list)
+                            or not support
+                            or any(
+                                not isinstance(i, str)
+                                or i == ident
+                                or i not in executed
+                                or i in self.contested
+                                for i in support
+                            )
+                        ):
+                            self.rejected.append(
+                                {
+                                    "action": "contest_rejected",
+                                    "id": ident,
+                                    "reason": "Checked arithmetic requires separate successful counterevidence to contest its source binding or metric applicability",
+                                }
+                            )
+                            continue
                     self.contested[ident] = reason[:600]
                     events.append(
                         {"action": "contest", "id": ident, "reason": reason[:600]}
@@ -96,7 +124,9 @@ class WorkingMemory:
         if not isinstance(revisions, list):
             return []
         successful = {
-            e["id"] for e in evidence if e.get("ok") and e["id"] not in self.contested
+            e["id"]
+            for e in evidence
+            if e.get("ok") is True and e["id"] not in self.contested
         }
         fields = {
             "need",
@@ -145,12 +175,15 @@ class WorkingMemory:
         return events
 
     def project(self):
-        return {
+        result = {
             "current_contract": self.contract,
             "correction_history": self.revisions[-12:],
             "contested_evidence": self.contested,
             "epistemic_status": "Model-proposed semantic corrections; not reference labels",
         }
+        if self.guard_checked_metrics:
+            result["rejected_corrections"] = self.rejected[-12:]
+        return result
 
     def active(self, evidence):
         return [e for e in evidence if e["id"] not in self.contested]

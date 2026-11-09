@@ -10,6 +10,7 @@ from pathlib import Path
 from .agent import SYSTEM
 from .answer_patch import apply_answer_patch
 from .memory import Bundle, fingerprint
+from .metrics import compile_metric, evaluate_metric
 from .model import Budget, json_object
 from .observations import Observations, evidence_text
 from .sql import execute, signature
@@ -36,6 +37,25 @@ REPLANNED_CONTRACTS = {
     "AnswerComposer": "原始用户需求与表头含义优先于模型契约。明确区分累计水平增幅与单期环比，给出区间首尾比较并标明口径；若两种解释均合理，分别提供可由证据支持的数值。没有前期累计值，不把首个展示期冒充单期。风险比较应综合可得的状态和流量；可透明说明替代指标与假设，不能将其称为表中已定义的指数。名称或数字疑似识别错误时保留原文，并用其他身份列交叉核查可能的规范写法；没有依据不得擅自改名。",
 }
 
+METRIC_PROTOCOL = """确定性计算工具协议（替代旧的仅SQL计算要求）：返回JSON必须包含queries和calculations两个列表，可为空。calculations最多四项。每项格式：
+{"need_id":"r1","metric":"指标名称与口径","unit":"原始单位","operation":"series","value_kind":"cumulative","points":[{"label":"原始时期名称","period":1,"cycle":"同一累计年度或周期","cell":{"table":"t0","row":2,"column":"c2"}},{"label":"下一时期","period":2,"cycle":"同一累计年度或周期","cell":{"table":"t0","row":2,"column":"c3"}}]}。
+cell只能引用原始单元格坐标，不能填写推算值或SQL结果。按实际时期升序排列；period是等间隔时期序号，缺期时保留序号间隔；cycle区分累计重置周期。series的value_kind可为level（普通水平序列）或cumulative（累计序列）。工具同时返回水平差额/增幅、区间首尾变化；累计序列另外返回相邻累计差分的单期值及其环比。缺失前期值时首期单期必为null，绝不填零或首期累计量。相对变化输出小数，百分比展示乘100。
+其他operation：difference（第二点减第一点）、relative_change（第二点相对第一点的变化，基期须为正）、ratio（第一点除第二点，分母非零）、sum、mean。它们也使用points中的原始cell，前三级要求恰好两点。单位不可混用；百分号原文自动转为小数，无法严格解析的原文保留为未知而不是零。一个计算只能覆盖同一实体、指标与统一单位；这些选择仍须依据用户需求和原始表头核查。
+原始坐标已明确且每个指标不超过二十四个单元格时，累计和趋势计算必须用calculations，不另写SQL差分或增长公式。SQL用于定位原始行、查表头、较大分组聚合或工具不支持的关系查询。不要为同一指标再生成一个带不同口径的SQL计算。需要先定位时本轮查询，下一角色再提交calculations。若需要数值计算但calculations为空，在calculation_policy说明为何工具不适用。不要为调用工具省略用户要求的解释、比较或建议。"""
+
+CHECKED_CONTRACTS = {
+    "SemanticPlanner": "明确每项指标是普通水平、累计量还是比率；不把其他口径替换用户需求。后续工具可从原始单元格计算水平变化与累计差分，但不能证明你选对了指标或时期。",
+    "QueryBuilder": METRIC_PROTOCOL,
+    "EvidenceVerifier": METRIC_PROTOCOL
+    + "\nchecked_metric证据的算术由程序执行；重点核查原始单元格绑定、单位、时期及适用性。不能仅因与自然语言规则表述不同而撤回。若要撤回checked_metric，在withdraw_evidence条目增加counterevidence_ids，引用其他已成功执行的证据，说明具体绑定或口径冲突；不能引用尚未执行的结果。不要重复已经完成的检查。若输入有draft_answer，逐项查其需求覆盖与数字；只有明确问题才要求改写。",
+    "AnswerComposer": "checked_metric提供有来源的确定性算术，选择指标、单位和时间语义仍须核查。level_relative_change是原始水平的增幅；single_period_relative_change才是差分单期量的环比，二者不能互相替代。null表示该公式前提未满足，不可用别的列或心算补零。百分比显示时把小数乘100。保留原始单元格与口径，回答全部需求；受质疑的绑定要说明，不能因模型重复质疑就推翻已核实的算术。",
+}
+
+CHECKED_OUTPUTS = {
+    "QueryBuilder": "依据用户需求和原始单元格生成结构化工具请求。逐项核查表头、列绑定、单位、分母、时间范围、明细与合计。只输出JSON，包含binding_checks、queries、calculations；queries每项包含needs、purpose、sql，calculations按下方确定性计算工具协议填写。每类最多四项；没有必要则为空。不要输出未经工具执行的计算答案。",
+    "EvidenceVerifier": '核对每项用户需求与实际原始证据，尤其检查对象、时期、指标口径、单位、缺失前提。模型计划和先前复核不是真值。只输出JSON：checks列表（每项need、status、evidence_ids、issue），queries列表（每项必须是{"needs":["r1"],"purpose":"目的","sql":"SELECT ..."}对象），calculations列表，revise_answer布尔值。补充工具请求按下方协议；证据足够则两个列表为空。若输入draft_answer，检查完整回答及错误，不为改写而改写。',
+}
+
 
 class CooperativeAgent:
     def __init__(
@@ -48,15 +68,19 @@ class CooperativeAgent:
         patched=False,
         routed=False,
         aligned=False,
+        checked=False,
     ):
         self.client = client
         self.bundle = copy.deepcopy(bundle).validate()
         self.max_calls = max_calls
-        self.reconciled = reconciled or replanned or patched or routed or aligned
-        self.replanned = replanned or patched or routed or aligned
+        self.reconciled = (
+            reconciled or replanned or patched or routed or aligned or checked
+        )
+        self.replanned = replanned or patched or routed or aligned or checked
         self.patched = patched
-        self.routed = routed or aligned
-        self.aligned = aligned
+        self.routed = routed or aligned or checked
+        self.aligned = aligned or checked
+        self.checked = checked
         self.dialog_contract = None
 
     def solve(self, store, question, history=None, seed=42):
@@ -81,7 +105,9 @@ class CooperativeAgent:
                 "elapsed_s": time.monotonic() - started,
                 "state_version": self.bundle.version,
                 "bundle_hash": self.bundle.hash,
-                "variant": "cooperative_v6"
+                "variant": "cooperative_v7"
+                if self.checked
+                else "cooperative_v6"
                 if self.aligned
                 else "cooperative_v5"
                 if self.routed
@@ -148,12 +174,23 @@ class CooperativeAgent:
                 + "\n可适用的跨任务协同规则：\n"
                 + json.dumps(memory, ensure_ascii=False)
                 + "\n当前角色固定契约：\n"
-                + CONTRACTS[role]
+                + (
+                    CHECKED_OUTPUTS.get(role, CONTRACTS[role])
+                    if self.checked
+                    else CONTRACTS[role]
+                )
             )
             if self.reconciled:
-                prompt += "\n协作交接补充契约：\n" + RECONCILED_CONTRACTS[role]
+                supplement = RECONCILED_CONTRACTS[role]
+                if self.checked:
+                    supplement = supplement.replace(
+                        "在SQL中计算", "通过calculations或必要的SQL计算"
+                    ).replace("实际SQL结果", "实际工具结果")
+                prompt += "\n协作交接补充契约：\n" + supplement
             if self.replanned:
                 prompt += "\n可修订语义契约：\n" + REPLANNED_CONTRACTS[role]
+            if self.checked:
+                prompt += "\n原始单元格计算契约：\n" + CHECKED_CONTRACTS[role]
             if (
                 self.routed
                 and self.bundle.skills
@@ -240,6 +277,20 @@ class CooperativeAgent:
                 return 0
             count = 0
             for item in items[:4]:
+                if self.checked and isinstance(item, str):
+                    # Normalize only the schema; retain the exact SQL and use
+                    # the same read-only guard, budget and executor as usual.
+                    item = {
+                        "sql": item,
+                        "purpose": "SQL string normalized to request object",
+                    }
+                    trace.append(
+                        {
+                            "role": "ToolSchemaNormalization",
+                            "author": author,
+                            "change": "SQL string -> object; query text unchanged",
+                        }
+                    )
                 if not isinstance(item, dict) or not isinstance(item.get("sql"), str):
                     continue
                 sql = item["sql"]
@@ -267,6 +318,51 @@ class CooperativeAgent:
                 }
                 evidence.append(rec)
                 trace.append({"role": "Executor", "author": author, "execution": rec})
+                count += 1
+            return count
+
+        def calculate(items, author):
+            if not self.checked or not isinstance(items, list):
+                return 0
+            count = 0
+            requirements = {
+                r.get("id")
+                for r in working_memory.contract.get("requirements", [])
+                if isinstance(r, dict) and isinstance(r.get("id"), str)
+            }
+            for spec in items[:4]:
+                if budget.used_db >= budget.db_calls:
+                    break
+                source = None
+                try:
+                    sql = compile_metric(spec)
+                    if spec["need_id"] not in requirements:
+                        raise ValueError("Calculation must link to an existing need")
+                    sig = "metric:" + fingerprint(spec)
+                    if sig in signatures:
+                        continue
+                    signatures.add(sig)
+                    budget.used_db += 1
+                    source = execute(Path(store) / "tables.sqlite", sql, row_limit=24)
+                    result = evaluate_metric(spec, source)
+                except (ValueError, ArithmeticError, TypeError) as exc:
+                    result = {"ok": False, "error": str(exc)[:600]}
+                rec = {
+                    "id": f"e{len(evidence) + 1}",
+                    "kind": "checked_metric",
+                    "needs": [spec.get("need_id")] if isinstance(spec, dict) else [],
+                    **result,
+                }
+                evidence.append(rec)
+                trace.append(
+                    {
+                        "role": "MetricExecutor",
+                        "author": author,
+                        "execution": rec,
+                        "source_execution": source,
+                        "requested_calculation": spec,
+                    }
+                )
                 count += 1
             return count
 
@@ -357,7 +453,9 @@ class CooperativeAgent:
                 selected = []
         if self.reconciled:
             working_memory = WorkingMemory(
-                contract, allow_requirement_revisions=self.replanned
+                contract,
+                allow_requirement_revisions=self.replanned,
+                guard_checked_metrics=self.checked,
             )
         tables = contract.get("tables", [])
         if not isinstance(tables, list):
@@ -366,8 +464,11 @@ class CooperativeAgent:
         cells = observations.render(query_context, tables, max_chars=26000)
         plan = call("QueryBuilder", {"contract": contract}, cells) or {}
         query(plan.get("queries", []), "QueryBuilder")
+        calculate(plan.get("calculations", []), "QueryBuilder")
         checks = []
-        for _ in range(2):
+        # v7 reserves composer + final review + repair under the same seven-call
+        # ceiling. Both empty and learned-memory arms follow this controller.
+        for _ in range(1 if self.checked else 2):
             review = (
                 call(
                     "EvidenceVerifier",
@@ -385,7 +486,9 @@ class CooperativeAgent:
             if working_memory:
                 events = working_memory.apply(review, evidence)
                 trace.append({"role": "MemoryReconciler", "events": events})
-            if not query(review.get("queries", []), "EvidenceVerifier"):
+            additional = query(review.get("queries", []), "EvidenceVerifier")
+            additional += calculate(review.get("calculations", []), "EvidenceVerifier")
+            if not additional:
                 break
         answer = call(
             "AnswerComposer",
@@ -410,6 +513,7 @@ class CooperativeAgent:
                 {"role": "MemoryReconciler", "events": events, "stage": "answer_review"}
             )
             additional = query(review.get("queries", []), "AnswerReview")
+            additional += calculate(review.get("calculations", []), "AnswerReview")
             if review.get("revise_answer") is True or events or additional:
                 corrected = call(
                     "AnswerComposer",

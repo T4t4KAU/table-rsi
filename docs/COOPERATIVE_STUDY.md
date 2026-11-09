@@ -346,8 +346,10 @@ Two foundations are implemented: binding corrections must cite evidence with
 an explicit successful execution status, and candidate evaluation reports
 preservation, damage, and repair of full reference-point coverage separately.
 Successful execution is necessary for that binding change, but does not prove
-its semantics. Typed metric checks, contrastive teaching, and a GEPA-style
-candidate pool are not yet implemented.
+its semantics. The subsequent experimental v7 implementation adds raw-cell
+arithmetic, preserves its typed metadata across roles, reserves final review,
+and supports contrastive teaching; see [CHECKED_METRICS.md](CHECKED_METRICS.md).
+It does not prove metric applicability or implement a GEPA-style candidate pool.
 
 To analyze an existing paired run without generating answers or rejudging:
 

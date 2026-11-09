@@ -17,6 +17,71 @@ def make_store(tmp_path):
     return store
 
 
+def test_checked_solver_executes_raw_cell_metric_and_reserves_final_repair(tmp_path):
+    store = make_store(tmp_path)
+    plan = {"tables": ["t0"], "requirements": [{"id": "r1", "need": "sum"}]}
+    calculation = {
+        "need_id": "r1",
+        "metric": "total",
+        "unit": "units",
+        "operation": "sum",
+        "points": [
+            {"cell": {"table": "t0", "row": row, "column": "c2"}} for row in (2, 3)
+        ],
+    }
+
+    class Fake:
+        def __init__(self):
+            self.messages = []
+            self.responses = iter(
+                [
+                    plan,
+                    plan,
+                    {"calculations": [calculation]},
+                    {
+                        "withdraw_evidence": [{"id": "e1", "reason": "I disagree"}],
+                        "queries": ["SELECT c1, c2 FROM t0 WHERE _row=2"],
+                    },
+                    "Total is 80.",
+                    {"revise_answer": True, "checks": [{"issue": "e1 gives 8"}]},
+                    "Total is 8.",
+                ]
+            )
+
+        def chat(self, messages, **kwargs):
+            self.messages.append(messages)
+            value = next(self.responses)
+            return {
+                "content": value if isinstance(value, str) else json.dumps(value),
+                "usage": {"prompt_tokens": 100, "completion_tokens": 20},
+            }
+
+    client = Fake()
+    result = CooperativeAgent(client, Bundle(), checked=True).solve(store, "Total?")
+    assert result["variant"] == "cooperative_v7"
+    assert result["answer"] == "Total is 8."
+    assert result["budget"]["used_calls"] == 7
+    assert result["budget"]["used_db"] == 2
+    assert any(t["role"] == "ToolSchemaNormalization" for t in result["trace"])
+    assert not result["working_memory"]["contested_evidence"]
+    assert result["working_memory"]["rejected_corrections"]
+    metric = next(
+        t["execution"] for t in result["trace"] if t["role"] == "MetricExecutor"
+    )
+    assert metric["rows"] == [[8.0]]
+    assert metric["source_cells"][0]["raw"] == "3"
+    roles = [t["role"] for t in result["trace"] if "response" in t]
+    assert roles == [
+        "SemanticPlanner",
+        "SemanticPlanner",
+        "QueryBuilder",
+        "EvidenceVerifier",
+        "AnswerComposer",
+        "EvidenceVerifier",
+        "AnswerComposer",
+    ]
+
+
 def test_joint_memory_projects_roles_without_provenance():
     skill = Skill(
         "ratio",
